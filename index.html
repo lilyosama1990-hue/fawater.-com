@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مولد الفاتورة الإلكترونية الضريبية - ZATCA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+  <header class="app-header no-print">
+    <div class="container header-flex">
+      <div class="brand-box">
+        <div class="brand-badge">ZATCA</div>
+        <div>
+          <h1>مولد الفاتورة الإلكترونية</h1>
+          <p>متوافق مع متطلبات هيئة الزكاة والضريبة والجمارك (TLV QR Code)</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="saveDataBtn" class="btn btn-gold">حفظ البيانات</button>
+        <button type="button" id="resetBtn" class="btn btn-ghost">تفريغ</button>
+        <button type="button" id="printBtn" class="btn btn-primary">معاينة وطباعة / PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- شريط تنقل سريع للموبايل بين الإدخال والمعاينة -->
+  <div class="mobile-switch no-print">
+    <button type="button" id="tabEditorBtn" class="switch-btn active">إدخال البيانات</button>
+    <button type="button" id="tabPreviewBtn" class="switch-btn">معاينة الفاتورة</button>
+  </div>
+
+  <main class="container main-grid">
+    <!-- قسم إدخال البيانات -->
+    <section id="editorPanel" class="editor-panel no-print">
+      <div class="card">
+        <div class="card-title-row">
+          <span class="step-num">1</span>
+          <h2>بيانات المنشأة (البائع)</h2>
+        </div>
+        <div class="form-group">
+          <label>شعار المنشأة (Logo)</label>
+          <input type="file" id="logoInput" accept="image/*" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>اسم المنشأة / المتجر *</label>
+            <input type="text" id="sellerName" value="مؤسسة آفاق التجارة" placeholder="اكتب اسم المنشأة" />
+          </div>
+          <div class="form-group">
+            <label>الرقم الضريبي (15 رقم) *</label>
+            <input type="text" id="vatNumber" value="300000000000003" maxlength="15" placeholder="3xxxxxxxxxxxxx3" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>السجل التجاري (اختياري)</label>
+            <input type="text" id="crNumber" value="1010123456" placeholder="رقم السجل التجاري" />
+          </div>
+          <div class="form-group">
+            <label>العنوان</label>
+            <input type="text" id="sellerAddress" value="الرياض، المملكة العربية السعودية" placeholder="المدينة - الحي" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title-row">
+          <span class="step-num">2</span>
+          <h2>تفاصيل الفاتورة والعميل</h2>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>رقم الفاتورة</label>
+            <input type="text" id="invoiceNumber" value="INV-2026-001" />
+          </div>
+          <div class="form-group">
+            <label>تاريخ ووقت الإصدار *</label>
+            <input type="datetime-local" id="invoiceDate" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>اسم العميل (اختياري)</label>
+            <input type="text" id="buyerName" placeholder="عميل نقدي" />
+          </div>
+          <div class="form-group">
+            <label>الرقم الضريبي للعميل (اختياري)</label>
+            <input type="text" id="buyerVat" maxlength="15" placeholder="اختياري للفواتير الضريبية" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>نسبة الضريبة (%)</label>
+            <input type="number" id="taxRate" value="15" min="0" max="100" step="0.5" />
+          </div>
+          <div class="form-group">
+            <label>لون الفاتورة</label>
+            <input type="color" id="themeColor" value="#0f294a" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header-flex">
+          <div class="card-title-row" style="margin-bottom:0">
+            <span class="step-num">3</span>
+            <h2>الأصناف والخدمات</h2>
+          </div>
+          <button type="button" id="addItemBtn" class="btn btn-sm btn-primary">+ إضافة صنف</button>
+        </div>
+        <div id="itemsContainer"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title-row">
+          <span class="step-num">4</span>
+          <h2>ملاحظات إضافية</h2>
+        </div>
+        <textarea id="invoiceNotes" rows="2" placeholder="شكراً لتعاملكم معنا..."></textarea>
+        <div class="bottom-actions">
+          <button type="button" id="goPreviewBtn" class="btn btn-gold full-mobile">معاينة الفاتورة الآن</button>
+          <button type="button" id="saveAndPrintBtn" class="btn btn-primary full-mobile">حفظ وطباعة PDF</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم معاينة الفاتورة الحقيقية -->
+    <section id="previewPanel" class="preview-panel">
+      <div class="preview-toolbar no-print">
+        <span class="preview-badge">معاينة مباشرة للفاتورة</span>
+        <div class="preview-btns">
+          <button type="button" id="backEditBtn" class="btn btn-sm btn-light">تعديل</button>
+          <button type="button" id="directPrintBtn" class="btn btn-sm btn-primary">حفظ / طباعة</button>
+        </div>
+      </div>
+
+      <div id="invoicePaper" class="invoice-paper">
+        <div class="inv-top" id="invTopBar">
+          <div class="inv-seller-info">
+            <img id="prevLogo" src="" alt="Logo" class="inv-logo hidden" />
+            <div>
+              <h2 id="prevSellerName">مؤسسة آفاق التجارة</h2>
+              <p id="prevSellerAddress">الرياض، المملكة العربية السعودية</p>
+              <p><strong>الرقم الضريبي / VAT:</strong> <span id="prevVatNumber">300000000000003</span></p>
+              <p id="prevCrRow"><strong>السجل التجاري / CR:</strong> <span id="prevCrNumber">1010123456</span></p>
+            </div>
+          </div>
+          <div class="inv-qr-box">
+            <div id="qrcode"></div>
+            <span class="qr-caption">رمز الاستجابة السريعة (ZATCA)</span>
+          </div>
+        </div>
+
+        <div class="inv-title-banner">
+          <h3>فاتورة ضريبية مبسطة</h3>
+          <span>Simplified Tax Invoice</span>
+        </div>
+
+        <div class="inv-meta-grid">
+          <div class="meta-box">
+            <p><strong>رقم الفاتورة / Invoice No:</strong> <span id="prevInvoiceNumber">INV-2026-001</span></p>
+            <p><strong>التاريخ والوقت / Date:</strong> <span id="prevInvoiceDate" dir="ltr"></span></p>
+          </div>
+          <div class="meta-box">
+            <p><strong>العميل / Customer:</strong> <span id="prevBuyerName">عميل نقدي</span></p>
+            <p id="prevBuyerVatRow" class="hidden"><strong>الرقم الضريبي للعميل:</strong> <span id="prevBuyerVat"></span></p>
+          </div>
+        </div>
+
+        <table class="inv-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>البيان / Item</th>
+              <th>الكمية / Qty</th>
+              <th>سعر الوحدة / Price</th>
+              <th>الضريبة / VAT</th>
+              <th>الإجمالي / Total</th>
+            </tr>
+          </thead>
+          <tbody id="prevItemsBody"></tbody>
+        </table>
+
+        <div class="inv-summary-wrap">
+          <div class="inv-notes-box">
+            <strong>ملاحظات / Notes:</strong>
+            <p id="prevNotes">شكراً لتعاملكم معنا</p>
+          </div>
+          <div class="inv-totals">
+            <div class="total-row">
+              <span>الإجمالي غير شامل الضريبة (Subtotal):</span>
+              <strong id="prevSubtotal">0.00 ر.س</strong>
+            </div>
+            <div class="total-row">
+              <span>ضريبة القيمة المضافة (<span id="prevTaxRate">15</span>% VAT):</span>
+              <strong id="prevTaxTotal">0.00 ر.س</strong>
+            </div>
+            <div class="total-row grand-total" id="grandTotalBar">
+              <span>الإجمالي شامل الضريبة (Total):</span>
+              <strong id="prevGrandTotal">0.00 ر.س</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="inv-footer">
+          <p>تم إصدار هذه الفاتورة إلكترونياً ومتوافقة مع متطلبات الفوترة الإلكترونية</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
