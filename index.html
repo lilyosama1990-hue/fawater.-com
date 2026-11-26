@@ -300,32 +300,32 @@ code.b64-box{
 
     <div class="grid-form">
       <div class="field">
-        <label id="lbl_seller">اسم البائع / المنشأة</label>
-        <input id="f_seller" value="مؤسسة مصنع نبع المدينة لتعبئة المياه">
+        <label id="lbl_seller">اسم الشركة</label>
+        <input id="f_seller" value="">
+      </div>
+      <div class="field">
+        <label id="lbl_vat">السجل الضريبي (15 رقم)</label>
+        <input id="f_vat" inputmode="numeric" value="">
       </div>
       <div class="field">
         <label id="lbl_addr1">العنوان / الحي</label>
-        <input id="f_addr1" value="حي المدينة الصناعية">
+        <input id="f_addr1" value="">
       </div>
       <div class="field">
         <label id="lbl_addr2">المدينة والرمز البريدي</label>
-        <input id="f_addr2" value="المدينة المنورة MED 42527">
+        <input id="f_addr2" value="">
       </div>
       <div class="field">
         <label id="lbl_phone">الهاتف / الرمز</label>
-        <input id="f_phone" value="4911 4911">
+        <input id="f_phone" value="">
       </div>
       <div class="field">
         <label id="lbl_country">الدولة</label>
-        <input id="f_country" value="المملكة العربية السعودية">
+        <input id="f_country" value="">
       </div>
       <div class="field">
         <label id="lbl_client">اسم العميل</label>
-        <input id="f_client" value="شركة نبض الحوت">
-      </div>
-      <div class="field">
-        <label id="lbl_vat">الرقم الضريبي (15 رقم)</label>
-        <input id="f_vat" inputmode="numeric" value="310088323600003">
+        <input id="f_client" value="">
       </div>
       <div class="field">
         <label id="lbl_inv">رقم الفاتورة</label>
@@ -333,31 +333,31 @@ code.b64-box{
       </div>
       <div class="field">
         <label id="lbl_invDate">تاريخ الفاتورة</label>
-        <input id="f_invDate" type="date" value="2026-11-25">
+        <input id="f_invDate" type="date" value="2026-11-26">
       </div>
       <div class="field">
         <label id="lbl_dueDate">تاريخ الاستحقاق</label>
-        <input id="f_dueDate" type="date" value="2026-11-25">
+        <input id="f_dueDate" type="date" value="2026-11-26">
       </div>
       <div class="field">
         <label id="lbl_supDate">تاريخ التوريد</label>
-        <input id="f_supDate" type="date" value="2026-11-25">
+        <input id="f_supDate" type="date" value="2026-11-26">
       </div>
       <div class="field">
         <label id="lbl_time">وقت الإصدار (للـ QR)</label>
-        <input id="f_time" type="time" step="1" value="08:49:01">
+        <input id="f_time" type="time" step="1" value="18:03:00">
       </div>
       <div class="field">
         <label id="lbl_payRef">رقم إشارة الدفعة</label>
-        <input id="f_payRef" value="1380">
+        <input id="f_payRef" value="">
       </div>
       <div class="field">
         <label id="lbl_email">البريد الإلكتروني</label>
-        <input id="f_email" value="info@awsfactory.com">
+        <input id="f_email" value="">
       </div>
       <div class="field">
         <label id="lbl_web">الموقع الإلكتروني</label>
-        <input id="f_web" value="https://awsfactory.com">
+        <input id="f_web" value="">
       </div>
       <div class="field">
         <label id="lbl_cur">رمز العملة</label>
@@ -596,7 +596,7 @@ const $ = (id) => document.getElementById(id);
 let lang = 'ar';
 let kind = 'standard';
 let rows = [
-  { desc: 'شيرنك 20 قارورة 330 مل', qty: '500', price: '4', taxRate: '15', taxLabel: 'Sales Tax' }
+  { desc: '', qty: '1', price: '0', taxRate: '15', taxLabel: 'Sales Tax' }
 ];
 
 const UI = {
@@ -604,9 +604,10 @@ const UI = {
     dir: 'rtl', lang: 'ar', toggle: 'Français', pdf: 'حفظ PDF', pdfBusy: 'جاري التحميل...', print: 'طباعة',
     barTitle: 'إعداد الفاتورة الضريبية (ZATCA)',
     kStd: 'ضريبية (B2B)', kSmp: 'مبسطة (B2C)',
-    lblSeller: 'اسم البائع / المنشأة', lblAddr1: 'العنوان / الحي', lblAddr2: 'المدينة والرمز البريدي',
+    lblSeller: 'اسم الشركة', lblVat: 'السجل الضريبي (15 رقم)',
+    lblAddr1: 'العنوان / الحي', lblAddr2: 'المدينة والرمز البريدي',
     lblPhone: 'الهاتف / الرمز', lblCountry: 'الدولة', lblClient: 'اسم العميل',
-    lblVat: 'الرقم الضريبي (15 رقم)', lblInv: 'رقم الفاتورة',
+    lblInv: 'رقم الفاتورة',
     lblInvDate: 'تاريخ الفاتورة', lblDueDate: 'تاريخ الاستحقاق', lblSupDate: 'تاريخ التوريد',
     lblTime: 'وقت الإصدار (للـ QR)', lblPayRef: 'رقم إشارة الدفعة',
     lblEmail: 'البريد الإلكتروني', lblWeb: 'الموقع الإلكتروني', lblCur: 'رمز العملة',
@@ -629,17 +630,18 @@ const UI = {
     grandLbl: 'Invoice Total (inclusive of VAT) / إجمالي قيمة الفاتورة شامل ضريبة القيمة المضافة',
     payEn: 'Payment Reference:', payAr: 'رقم إشارة الدفعة:',
     pageLbl: 'Page 1/1', b64Lbl: 'قيمة Base64 المشفرة للـ QR (ZATCA Phase 1):',
-    errSeller: 'اكتب اسم البائع.',
-    errVat: 'الرقم الضريبي يجب أن يكون 15 رقماً يبدأ وينتهي بالرقم 3.',
+    errSeller: 'اكتب اسم الشركة.',
+    errVat: 'السجل الضريبي يجب أن يكون 15 رقماً يبدأ وينتهي بالرقم 3.',
     errItem: 'تأكد من إدخال وصف وكمية وسعر صحيح لكل بند.'
   },
   fr: {
     dir: 'ltr', lang: 'fr', toggle: 'العربية', pdf: 'Enregistrer PDF', pdfBusy: 'Téléchargement...', print: 'Imprimer',
     barTitle: 'Configuration Facture Fiscale (ZATCA)',
     kStd: 'Fiscale (B2B)', kSmp: 'Simplifiée (B2C)',
-    lblSeller: 'Nom du vendeur', lblAddr1: 'Adresse / Quartier', lblAddr2: 'Ville & Code postal',
+    lblSeller: 'Nom de l\'entreprise', lblVat: 'Registre fiscal / TVA (15 chiffres)',
+    lblAddr1: 'Adresse / Quartier', lblAddr2: 'Ville & Code postal',
     lblPhone: 'Téléphone', lblCountry: 'Pays', lblClient: 'Nom du client',
-    lblVat: 'N° TVA (15 chiffres)', lblInv: 'N° Facture',
+    lblInv: 'N° Facture',
     lblInvDate: 'Date facture', lblDueDate: 'Date d\'échéance', lblSupDate: 'Date de livraison',
     lblTime: 'Heure (pour QR)', lblPayRef: 'Référence paiement',
     lblEmail: 'E-mail', lblWeb: 'Site web', lblCur: 'Devise',
@@ -662,8 +664,8 @@ const UI = {
     grandLbl: 'Invoice Total (inclusive of VAT) / إجمالي قيمة الفاتورة شامل ضريبة القيمة المضافة',
     payEn: 'Payment Reference:', payAr: 'رقم إشارة الدفعة:',
     pageLbl: 'Page 1/1', b64Lbl: 'Chaîne Base64 encodée pour QR (ZATCA Phase 1) :',
-    errSeller: 'Saisissez le nom du vendeur.',
-    errVat: 'Le numéro de TVA doit contenir 15 chiffres et commencer/finir par 3.',
+    errSeller: 'Saisissez le nom de l\'entreprise.',
+    errVat: 'Le numéro doit contenir 15 chiffres et commencer/finir par 3.',
     errItem: 'Vérifiez la désignation, la quantité et le prix de chaque ligne.'
   }
 };
@@ -723,12 +725,12 @@ function applyLabels() {
   $('k_std').textContent = t.kStd;
   $('k_smp').textContent = t.kSmp;
   $('lbl_seller').textContent = t.lblSeller;
+  $('lbl_vat').textContent = t.lblVat;
   $('lbl_addr1').textContent = t.lblAddr1;
   $('lbl_addr2').textContent = t.lblAddr2;
   $('lbl_phone').textContent = t.lblPhone;
   $('lbl_country').textContent = t.lblCountry;
   $('lbl_client').textContent = t.lblClient;
-  $('lbl_vat').textContent = t.lblVat;
   $('lbl_inv').textContent = t.lblInv;
   $('lbl_invDate').textContent = t.lblInvDate;
   $('lbl_dueDate').textContent = t.lblDueDate;
@@ -745,12 +747,12 @@ function applyLabels() {
 function renderInvoice() {
   const t = UI[lang];
   const seller = $('f_seller').value.trim();
+  const vat = $('f_vat').value.replace(/\D/g, '').slice(0, 15);
   const addr1 = $('f_addr1').value.trim();
   const addr2 = $('f_addr2').value.trim();
   const phone = $('f_phone').value.trim();
   const country = $('f_country').value.trim();
   const client = $('f_client').value.trim();
-  const vat = $('f_vat').value.replace(/\D/g, '').slice(0, 15);
   const invNo = $('f_inv').value.trim();
   const invDate = $('f_invDate').value.trim();
   const dueDate = $('f_dueDate').value.trim();
@@ -805,7 +807,7 @@ function renderInvoice() {
   let qrSvg = '';
   let b64 = '';
   if (!errs.length) {
-    const isoStamp = `${invDate || '2026-11-25'}T${timeVal}Z`;
+    const isoStamp = `${invDate || '2026-11-26'}T${timeVal}Z`;
     b64 = zatcaPayload(seller, vat, isoStamp, fmtFixed2(sumIn), fmtFixed2(sumVat));
     const mat = qrMatrix(utf8(b64));
     const sz = mat.length + 6;
@@ -988,7 +990,7 @@ document.addEventListener('click', (e) => {
 });
 
 $('add_row_btn').onclick = () => {
-  rows.push({ desc: 'صنف جديد', qty: '1', price: '100', taxRate: '15', taxLabel: 'Sales Tax' });
+  rows.push({ desc: '', qty: '1', price: '0', taxRate: '15', taxLabel: 'Sales Tax' });
   renderItemsEditor();
   renderInvoice();
 };
