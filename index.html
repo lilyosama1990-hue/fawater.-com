@@ -920,6 +920,10 @@ function saveInvoicePDF() {
   setTimeout(() => { document.title = prevTitle; }, 400);
 }
 
+function printInvoiceDirect() {
+  window.print();
+}
+
 document.addEventListener('input', (e) => {
   const el = e.target;
   if (el.dataset && el.dataset.row !== undefined) {
@@ -967,7 +971,7 @@ $('lang_btn').onclick = () => {
 };
 
 $('pdf_btn').onclick = saveInvoicePDF;
-$('print_btn').onclick = () => window.print();
+$('print_btn').onclick = printInvoiceDirect;
 
 applyLabels();
 renderItemsEditor();
