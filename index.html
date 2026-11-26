@@ -3,218 +3,510 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>مولد الفاتورة الإلكترونية الضريبية - ZATCA</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <title>فاتورة إلكترونية - ZATCA</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg: #f3f5f8;
+      --card: #ffffff;
+      --primary: #16324f;
+      --accent: #0f766e;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .toolbar h1 {
+      margin: 0;
+      font-size: 18px;
+      color: var(--primary);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: var(--danger);
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    .panel, .invoice-sheet {
+      background: var(--card);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 20px;
+    }
+
+    .panel-title {
+      margin: 0 0 14px;
+      font-size: 15px;
+      color: var(--primary);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .field input {
+      padding: 9px 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .inv-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .inv-company h2 {
+      margin: 0 0 6px;
+      color: var(--primary);
+      font-size: 22px;
+    }
+
+    .inv-meta {
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #ecfdf5;
+      color: var(--accent);
+      border: 1px solid #a7f3d0;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-bottom: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: right;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    td input {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .inv-footer {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+    }
+
+    .totals {
+      max-width: 340px;
+      margin-right: auto;
+      width: 100%;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 14px;
+    }
+
+    .total-row.grand {
+      border-bottom: none;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--primary);
+      padding-top: 10px;
+    }
+
+    .qr-box {
+      text-align: center;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      background: #fafafa;
+    }
+
+    .qr-box canvas {
+      display: block;
+      margin: 0 auto 6px;
+    }
+
+    .qr-box small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    @media (max-width: 640px) {
+      .inv-meta {
+        text-align: right;
+        width: 100%;
+      }
+      .inv-footer {
+        grid-template-columns: 1fr;
+      }
+      .totals {
+        max-width: 100%;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+      .toolbar, .panel, .no-print {
+        display: none !important;
+      }
+      .invoice-sheet {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
+    }
+  </style>
 </head>
 <body>
-
-  <header class="app-header no-print">
-    <div class="container header-flex">
-      <div class="brand-box">
-        <div class="brand-badge">ZATCA</div>
-        <div>
-          <h1>مولد الفاتورة الإلكترونية</h1>
-          <p>متوافق مع متطلبات هيئة الزكاة والضريبة والجمارك (TLV QR Code)</p>
-        </div>
-      </div>
-      <div class="header-actions">
-        <button type="button" id="saveDataBtn" class="btn btn-gold">حفظ البيانات</button>
-        <button type="button" id="resetBtn" class="btn btn-ghost">تفريغ</button>
-        <button type="button" id="printBtn" class="btn btn-primary">معاينة وطباعة / PDF</button>
+  <div class="container">
+    <div class="toolbar">
+      <h1>نظام الفواتير الإلكترونية (ZATCA)</h1>
+      <div class="actions">
+        <button class="btn-outline" type="button" onclick="addItem()">+ إضافة صنف</button>
+        <button class="btn-primary" type="button" onclick="updateInvoice()">تحديث الباركود</button>
+        <button class="btn-secondary" type="button" onclick="window.print()">طباعة / PDF</button>
       </div>
     </div>
-  </header>
 
-  <!-- شريط تنقل سريع للموبايل بين الإدخال والمعاينة -->
-  <div class="mobile-switch no-print">
-    <button type="button" id="tabEditorBtn" class="switch-btn active">إدخال البيانات</button>
-    <button type="button" id="tabPreviewBtn" class="switch-btn">معاينة الفاتورة</button>
-  </div>
-
-  <main class="container main-grid">
-    <!-- قسم إدخال البيانات -->
-    <section id="editorPanel" class="editor-panel no-print">
-      <div class="card">
-        <div class="card-title-row">
-          <span class="step-num">1</span>
-          <h2>بيانات المنشأة (البائع)</h2>
+    <section class="panel">
+      <h2 class="panel-title">بيانات المنشأة والفاتورة</h2>
+      <div class="grid-3">
+        <div class="field">
+          <label for="sellerName">اسم البائع / المنشأة</label>
+          <input id="sellerName" type="text" value="مؤسسة دار الريف التجارية" oninput="updateInvoice()" />
         </div>
-        <div class="form-group">
-          <label>شعار المنشأة (Logo)</label>
-          <input type="file" id="logoInput" accept="image/*" />
+        <div class="field">
+          <label for="vatNumber">الرقم الضريبي (15 رقم)</label>
+          <input id="vatNumber" type="text" maxlength="15" value="300000000000003" oninput="updateInvoice()" />
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>اسم المنشأة / المتجر *</label>
-            <input type="text" id="sellerName" value="مؤسسة آفاق التجارة" placeholder="اكتب اسم المنشأة" />
-          </div>
-          <div class="form-group">
-            <label>الرقم الضريبي (15 رقم) *</label>
-            <input type="text" id="vatNumber" value="300000000000003" maxlength="15" placeholder="3xxxxxxxxxxxxx3" />
-          </div>
+        <div class="field">
+          <label for="invoiceNumber">رقم الفاتورة</label>
+          <input id="invoiceNumber" type="text" value="INV-2026-001" oninput="updateInvoice()" />
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>السجل التجاري (اختياري)</label>
-            <input type="text" id="crNumber" value="1010123456" placeholder="رقم السجل التجاري" />
-          </div>
-          <div class="form-group">
-            <label>العنوان</label>
-            <input type="text" id="sellerAddress" value="الرياض، المملكة العربية السعودية" placeholder="المدينة - الحي" />
-          </div>
+        <div class="field">
+          <label for="customerName">اسم العميل</label>
+          <input id="customerName" type="text" value="عميل نقدي" oninput="updateInvoice()" />
         </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title-row">
-          <span class="step-num">2</span>
-          <h2>تفاصيل الفاتورة والعميل</h2>
+        <div class="field">
+          <label for="invoiceDate">تاريخ ووقت الإصدار (ISO)</label>
+          <input id="invoiceDate" type="text" value="2026-11-26T12:00:00Z" oninput="updateInvoice()" />
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>رقم الفاتورة</label>
-            <input type="text" id="invoiceNumber" value="INV-2026-001" />
-          </div>
-          <div class="form-group">
-            <label>تاريخ ووقت الإصدار *</label>
-            <input type="datetime-local" id="invoiceDate" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>اسم العميل (اختياري)</label>
-            <input type="text" id="buyerName" placeholder="عميل نقدي" />
-          </div>
-          <div class="form-group">
-            <label>الرقم الضريبي للعميل (اختياري)</label>
-            <input type="text" id="buyerVat" maxlength="15" placeholder="اختياري للفواتير الضريبية" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>نسبة الضريبة (%)</label>
-            <input type="number" id="taxRate" value="15" min="0" max="100" step="0.5" />
-          </div>
-          <div class="form-group">
-            <label>لون الفاتورة</label>
-            <input type="color" id="themeColor" value="#0f294a" />
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header-flex">
-          <div class="card-title-row" style="margin-bottom:0">
-            <span class="step-num">3</span>
-            <h2>الأصناف والخدمات</h2>
-          </div>
-          <button type="button" id="addItemBtn" class="btn btn-sm btn-primary">+ إضافة صنف</button>
-        </div>
-        <div id="itemsContainer"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title-row">
-          <span class="step-num">4</span>
-          <h2>ملاحظات إضافية</h2>
-        </div>
-        <textarea id="invoiceNotes" rows="2" placeholder="شكراً لتعاملكم معنا..."></textarea>
-        <div class="bottom-actions">
-          <button type="button" id="goPreviewBtn" class="btn btn-gold full-mobile">معاينة الفاتورة الآن</button>
-          <button type="button" id="saveAndPrintBtn" class="btn btn-primary full-mobile">حفظ وطباعة PDF</button>
+        <div class="field">
+          <label for="vatRate">نسبة الضريبة (%)</label>
+          <input id="vatRate" type="number" step="0.01" value="15" oninput="updateInvoice()" />
         </div>
       </div>
     </section>
 
-    <!-- قسم معاينة الفاتورة الحقيقية -->
-    <section id="previewPanel" class="preview-panel">
-      <div class="preview-toolbar no-print">
-        <span class="preview-badge">معاينة مباشرة للفاتورة</span>
-        <div class="preview-btns">
-          <button type="button" id="backEditBtn" class="btn btn-sm btn-light">تعديل</button>
-          <button type="button" id="directPrintBtn" class="btn btn-sm btn-primary">حفظ / طباعة</button>
+    <section class="invoice-sheet">
+      <div class="inv-header">
+        <div class="inv-company">
+          <span class="badge">فاتورة ضريبية مبسطة</span>
+          <h2 id="viewSellerName">مؤسسة دار الريف التجارية</h2>
+          <div>الرقم الضريبي: <strong id="viewVatNumber">300000000000003</strong></div>
+          <div>العميل: <span id="viewCustomerName">عميل نقدي</span></div>
+        </div>
+        <div class="inv-meta">
+          <div>رقم الفاتورة: <strong id="viewInvoiceNumber">INV-2026-001</strong></div>
+          <div>التاريخ: <span id="viewInvoiceDate">2026-11-26T12:00:00Z</span></div>
         </div>
       </div>
 
-      <div id="invoicePaper" class="invoice-paper">
-        <div class="inv-top" id="invTopBar">
-          <div class="inv-seller-info">
-            <img id="prevLogo" src="" alt="Logo" class="inv-logo hidden" />
-            <div>
-              <h2 id="prevSellerName">مؤسسة آفاق التجارة</h2>
-              <p id="prevSellerAddress">الرياض، المملكة العربية السعودية</p>
-              <p><strong>الرقم الضريبي / VAT:</strong> <span id="prevVatNumber">300000000000003</span></p>
-              <p id="prevCrRow"><strong>السجل التجاري / CR:</strong> <span id="prevCrNumber">1010123456</span></p>
-            </div>
-          </div>
-          <div class="inv-qr-box">
-            <div id="qrcode"></div>
-            <span class="qr-caption">رمز الاستجابة السريعة (ZATCA)</span>
-          </div>
-        </div>
-
-        <div class="inv-title-banner">
-          <h3>فاتورة ضريبية مبسطة</h3>
-          <span>Simplified Tax Invoice</span>
-        </div>
-
-        <div class="inv-meta-grid">
-          <div class="meta-box">
-            <p><strong>رقم الفاتورة / Invoice No:</strong> <span id="prevInvoiceNumber">INV-2026-001</span></p>
-            <p><strong>التاريخ والوقت / Date:</strong> <span id="prevInvoiceDate" dir="ltr"></span></p>
-          </div>
-          <div class="meta-box">
-            <p><strong>العميل / Customer:</strong> <span id="prevBuyerName">عميل نقدي</span></p>
-            <p id="prevBuyerVatRow" class="hidden"><strong>الرقم الضريبي للعميل:</strong> <span id="prevBuyerVat"></span></p>
-          </div>
-        </div>
-
-        <table class="inv-table">
+      <div class="table-wrap">
+        <table>
           <thead>
             <tr>
-              <th>#</th>
-              <th>البيان / Item</th>
-              <th>الكمية / Qty</th>
-              <th>سعر الوحدة / Price</th>
-              <th>الضريبة / VAT</th>
-              <th>الإجمالي / Total</th>
+              <th>الصنف</th>
+              <th style="width: 110px;">الكمية</th>
+              <th style="width: 140px;">سعر الوحدة</th>
+              <th style="width: 140px;">الإجمالي</th>
+              <th class="no-print" style="width: 80px;">حذف</th>
             </tr>
           </thead>
-          <tbody id="prevItemsBody"></tbody>
+          <tbody id="itemsBody"></tbody>
         </table>
+      </div>
 
-        <div class="inv-summary-wrap">
-          <div class="inv-notes-box">
-            <strong>ملاحظات / Notes:</strong>
-            <p id="prevNotes">شكراً لتعاملكم معنا</p>
+      <div class="inv-footer">
+        <div class="totals">
+          <div class="total-row">
+            <span>المجموع قبل الضريبة</span>
+            <strong id="subtotalText">0.00</strong>
           </div>
-          <div class="inv-totals">
-            <div class="total-row">
-              <span>الإجمالي غير شامل الضريبة (Subtotal):</span>
-              <strong id="prevSubtotal">0.00 ر.س</strong>
-            </div>
-            <div class="total-row">
-              <span>ضريبة القيمة المضافة (<span id="prevTaxRate">15</span>% VAT):</span>
-              <strong id="prevTaxTotal">0.00 ر.س</strong>
-            </div>
-            <div class="total-row grand-total" id="grandTotalBar">
-              <span>الإجمالي شامل الضريبة (Total):</span>
-              <strong id="prevGrandTotal">0.00 ر.س</strong>
-            </div>
+          <div class="total-row">
+            <span>ضريبة القيمة المضافة</span>
+            <strong id="vatText">0.00</strong>
+          </div>
+          <div class="total-row grand">
+            <span>الإجمالي شامل الضريبة</span>
+            <strong id="totalText">0.00</strong>
           </div>
         </div>
 
-        <div class="inv-footer">
-          <p>تم إصدار هذه الفاتورة إلكترونياً ومتوافقة مع متطلبات الفوترة الإلكترونية</p>
+        <div class="qr-box">
+          <canvas id="qrCanvas"></canvas>
+          <small>ZATCA TLV Base64 QR</small>
         </div>
       </div>
     </section>
-  </main>
+  </div>
 
-  <script src="script.js"></script>
+  <script>
+    const initialItems = [
+      { name: "منتج / خدمة رقم 1", qty: 1, price: 100 }
+    ];
+
+    function encodeTLVField(tag, value) {
+      const encoder = new TextEncoder();
+      const valueBytes = encoder.encode(String(value ?? ""));
+      const len = valueBytes.length;
+
+      let lengthBytes;
+      if (len < 128) {
+        lengthBytes = new Uint8Array([len]);
+      } else {
+        const temp = [];
+        let n = len;
+        while (n > 0) {
+          temp.unshift(n & 0xff);
+          n >>= 8;
+        }
+        lengthBytes = new Uint8Array([0x80 | temp.length, ...temp]);
+      }
+
+      const out = new Uint8Array(1 + lengthBytes.length + valueBytes.length);
+      out[0] = tag & 0xff;
+      out.set(lengthBytes, 1);
+      out.set(valueBytes, 1 + lengthBytes.length);
+      return out;
+    }
+
+    function bytesToBase64(bytes) {
+      let binary = "";
+      const chunkSize = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        const chunk = bytes.subarray(i, i + chunkSize);
+        binary += String.fromCharCode.apply(null, chunk);
+      }
+      return btoa(binary);
+    }
+
+    function buildZatcaQR({ sellerName, vatNumber, timestamp, totalWithVat, vatAmount }) {
+      const fields = [
+        encodeTLVField(1, sellerName),
+        encodeTLVField(2, vatNumber),
+        encodeTLVField(3, timestamp),
+        encodeTLVField(4, Number(totalWithVat).toFixed(2)),
+        encodeTLVField(5, Number(vatAmount).toFixed(2))
+      ];
+
+      const totalSize = fields.reduce((sum, arr) => sum + arr.length, 0);
+      const buffer = new Uint8Array(totalSize);
+      let offset = 0;
+      for (const field of fields) {
+        buffer.set(field, offset);
+        offset += field.length;
+      }
+      return bytesToBase64(buffer);
+    }
+
+    function renderRows() {
+      const tbody = document.getElementById("itemsBody");
+      tbody.innerHTML = "";
+      initialItems.forEach((item, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input type="text" value="${item.name}" oninput="initialItems[${idx}].name = this.value; updateInvoice();" /></td>
+          <td><input type="number" min="1" step="1" value="${item.qty}" oninput="initialItems[${idx}].qty = Number(this.value) || 0; updateInvoice();" /></td>
+          <td><input type="number" min="0" step="0.01" value="${item.price}" oninput="initialItems[${idx}].price = Number(this.value) || 0; updateInvoice();" /></td>
+          <td><strong id="rowTotal-${idx}">0.00</strong></td>
+          <td class="no-print"><button class="btn-danger" type="button" onclick="removeItem(${idx})">حذف</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function addItem() {
+      initialItems.push({ name: "صنف جديد", qty: 1, price: 50 });
+      renderRows();
+      updateInvoice();
+    }
+
+    function removeItem(idx) {
+      if (initialItems.length === 1) return;
+      initialItems.splice(idx, 1);
+      renderRows();
+      updateInvoice();
+    }
+
+    function updateInvoice() {
+      const sellerName = document.getElementById("sellerName").value.trim();
+      const vatNumber = document.getElementById("vatNumber").value.trim();
+      const invoiceNumber = document.getElementById("invoiceNumber").value.trim();
+      const customerName = document.getElementById("customerName").value.trim();
+      const invoiceDate = document.getElementById("invoiceDate").value.trim();
+      const vatRate = Number(document.getElementById("vatRate").value) || 0;
+
+      document.getElementById("viewSellerName").textContent = sellerName || "—";
+      document.getElementById("viewVatNumber").textContent = vatNumber || "—";
+      document.getElementById("viewInvoiceNumber").textContent = invoiceNumber || "—";
+      document.getElementById("viewCustomerName").textContent = customerName || "—";
+      document.getElementById("viewInvoiceDate").textContent = invoiceDate || "—";
+
+      let subtotal = 0;
+      initialItems.forEach((item, idx) => {
+        const rowSum = (Number(item.qty) || 0) * (Number(item.price) || 0);
+        subtotal += rowSum;
+        const rowEl = document.getElementById(`rowTotal-${idx}`);
+        if (rowEl) rowEl.textContent = rowSum.toFixed(2);
+      });
+
+      const vatAmount = subtotal * (vatRate / 100);
+      const totalWithVat = subtotal + vatAmount;
+
+      document.getElementById("subtotalText").textContent = subtotal.toFixed(2);
+      document.getElementById("vatText").textContent = vatAmount.toFixed(2);
+      document.getElementById("totalText").textContent = totalWithVat.toFixed(2);
+
+      const qrBase64 = buildZatcaQR({
+        sellerName,
+        vatNumber,
+        timestamp: invoiceDate,
+        totalWithVat,
+        vatAmount
+      });
+
+      const canvas = document.getElementById("qrCanvas");
+      if (window.QRCode && canvas) {
+        QRCode.toCanvas(canvas, qrBase64, { width: 140, margin: 1 }, (err) => {
+          if (err) console.error(err);
+        });
+      }
+    }
+
+    renderRows();
+    updateInvoice();
+  </script>
 </body>
 </html>
