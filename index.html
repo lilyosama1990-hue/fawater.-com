@@ -54,6 +54,7 @@ button{
 }
 button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-pdf{background:#15803d;color:#fff;border-color:#15803d}
 .btn-danger{background:#fee2e2;color:#b91c1c;border-color:#fca5a5;padding:4px 9px;font-size:12px}
 
 .grid-form{
@@ -90,7 +91,6 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   display:none;
 }
 
-/* ورقة الفاتورة المشابهة للتصميم الرسمي */
 .invoice-page{
   background:var(--paper);
   padding:28px 30px 22px;
@@ -268,11 +268,16 @@ code.b64-box{
   .page-footer{flex-direction:column;align-items:flex-start}
 }
 
+@page{
+  size:A4 portrait;
+  margin:10mm;
+}
+
 @media print{
   body{background:#fff;padding:0}
   .app-shell{max-width:100%;gap:0}
   .editor-bar,.no-print,.b64-wrap{display:none!important}
-  .invoice-page{border:none;box-shadow:none;padding:12px}
+  .invoice-page{border:none;box-shadow:none;padding:0}
 }
 </style>
 </head>
@@ -285,7 +290,8 @@ code.b64-box{
         <button type="button" id="k_std" class="active">ضريبية (B2B)</button>
         <button type="button" id="k_smp">مبسطة (B2C)</button>
         <button type="button" id="lang_btn">Français</button>
-        <button type="button" id="print_btn" class="btn-primary">طباعة / PDF</button>
+        <button type="button" id="pdf_btn" class="btn-pdf">حفظ PDF</button>
+        <button type="button" id="print_btn" class="btn-primary">طباعة</button>
       </div>
     </div>
 
@@ -592,7 +598,7 @@ let rows = [
 
 const UI = {
   ar: {
-    dir: 'rtl', lang: 'ar', toggle: 'Français', print: 'طباعة / PDF',
+    dir: 'rtl', lang: 'ar', toggle: 'Français', pdf: 'حفظ PDF', print: 'طباعة',
     barTitle: 'إعداد الفاتورة الضريبية (ZATCA)',
     kStd: 'ضريبية (B2B)', kSmp: 'مبسطة (B2C)',
     lblSeller: 'اسم البائع / المنشأة', lblAddr1: 'العنوان / الحي', lblAddr2: 'المدينة والرمز البريدي',
@@ -625,7 +631,7 @@ const UI = {
     errItem: 'تأكد من إدخال وصف وكمية وسعر صحيح لكل بند.'
   },
   fr: {
-    dir: 'ltr', lang: 'fr', toggle: 'العربية', print: 'Imprimer / PDF',
+    dir: 'ltr', lang: 'fr', toggle: 'العربية', pdf: 'Enregistrer PDF', print: 'Imprimer',
     barTitle: 'Configuration Facture Fiscale (ZATCA)',
     kStd: 'Fiscale (B2B)', kSmp: 'Simplifiée (B2C)',
     lblSeller: 'Nom du vendeur', lblAddr1: 'Adresse / Quartier', lblAddr2: 'Ville & Code postal',
@@ -708,6 +714,7 @@ function applyLabels() {
   document.documentElement.lang = t.lang;
   document.documentElement.dir = t.dir;
   $('lang_btn').textContent = t.toggle;
+  $('pdf_btn').textContent = t.pdf;
   $('print_btn').textContent = t.print;
   $('ui_barTitle').textContent = t.barTitle;
   $('k_std').textContent = t.kStd;
@@ -905,6 +912,14 @@ function renderInvoice() {
   `;
 }
 
+function saveInvoicePDF() {
+  const prevTitle = document.title;
+  const invNum = ($('f_inv').value || 'invoice').trim();
+  document.title = `Invoice-${invNum}`;
+  window.print();
+  setTimeout(() => { document.title = prevTitle; }, 400);
+}
+
 document.addEventListener('input', (e) => {
   const el = e.target;
   if (el.dataset && el.dataset.row !== undefined) {
@@ -951,6 +966,7 @@ $('lang_btn').onclick = () => {
   renderInvoice();
 };
 
+$('pdf_btn').onclick = saveInvoicePDF;
 $('print_btn').onclick = () => window.print();
 
 applyLabels();
