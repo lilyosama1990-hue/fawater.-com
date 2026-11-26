@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>فاتورة ضريبية — Tax Invoice</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
   --ink:#1f2937;
@@ -52,6 +54,7 @@ button{
   font-weight:700;
   cursor:pointer;
 }
+button:disabled{opacity:.6;cursor:wait}
 button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn-pdf{background:#15803d;color:#fff;border-color:#15803d}
@@ -598,7 +601,7 @@ let rows = [
 
 const UI = {
   ar: {
-    dir: 'rtl', lang: 'ar', toggle: 'Français', pdf: 'حفظ PDF', print: 'طباعة',
+    dir: 'rtl', lang: 'ar', toggle: 'Français', pdf: 'حفظ PDF', pdfBusy: 'جاري التحميل...', print: 'طباعة',
     barTitle: 'إعداد الفاتورة الضريبية (ZATCA)',
     kStd: 'ضريبية (B2B)', kSmp: 'مبسطة (B2C)',
     lblSeller: 'اسم البائع / المنشأة', lblAddr1: 'العنوان / الحي', lblAddr2: 'المدينة والرمز البريدي',
@@ -631,7 +634,7 @@ const UI = {
     errItem: 'تأكد من إدخال وصف وكمية وسعر صحيح لكل بند.'
   },
   fr: {
-    dir: 'ltr', lang: 'fr', toggle: 'العربية', pdf: 'Enregistrer PDF', print: 'Imprimer',
+    dir: 'ltr', lang: 'fr', toggle: 'العربية', pdf: 'Enregistrer PDF', pdfBusy: 'Téléchargement...', print: 'Imprimer',
     barTitle: 'Configuration Facture Fiscale (ZATCA)',
     kStd: 'Fiscale (B2B)', kSmp: 'Simplifiée (B2C)',
     lblSeller: 'Nom du vendeur', lblAddr1: 'Adresse / Quartier', lblAddr2: 'Ville & Code postal',
@@ -912,16 +915,57 @@ function renderInvoice() {
   `;
 }
 
-function saveInvoicePDF() {
-  const prevTitle = document.title;
-  const invNum = ($('f_inv').value || 'invoice').trim();
-  document.title = `Invoice-${invNum}`;
-  window.print();
-  setTimeout(() => { document.title = prevTitle; }, 400);
-}
+async function downloadInvoicePDF() {
+  const btn = $('pdf_btn');
+  const t = UI[lang];
+  const sheet = $('invoice_sheet');
+  const invNum = ($('f_inv').value || 'invoice').trim().replace(/[^\w\-]/g, '_');
 
-function printInvoiceDirect() {
-  window.print();
+  if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
+    window.print();
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = t.pdfBusy;
+
+  try {
+    const canvas = await window.html2canvas(sheet, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff'
+    });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const margin = 8;
+    const availW = pageW - margin * 2;
+    const imgH = (canvas.height * availW) / canvas.width;
+
+    if (imgH <= pageH - margin * 2) {
+      pdf.addImage(imgData, 'PNG', margin, margin, availW, imgH);
+    } else {
+      let heightLeft = imgH;
+      let position = margin;
+      pdf.addImage(imgData, 'PNG', margin, position, availW, imgH);
+      heightLeft -= (pageH - margin * 2);
+      while (heightLeft > 0) {
+        position = heightLeft - imgH + margin;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', margin, position, availW, imgH);
+        heightLeft -= (pageH - margin * 2);
+      }
+    }
+
+    pdf.save(`Invoice-${invNum}.pdf`);
+  } catch (err) {
+    window.print();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t.pdf;
+  }
 }
 
 document.addEventListener('input', (e) => {
@@ -970,8 +1014,8 @@ $('lang_btn').onclick = () => {
   renderInvoice();
 };
 
-$('pdf_btn').onclick = saveInvoicePDF;
-$('print_btn').onclick = printInvoiceDirect;
+$('pdf_btn').onclick = downloadInvoicePDF;
+$('print_btn').onclick = () => window.print();
 
 applyLabels();
 renderItemsEditor();
