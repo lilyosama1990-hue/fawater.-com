@@ -171,9 +171,16 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 
 .header-top-bar{
   display:flex;
-  justify-content:flex-start;
-  align-items:flex-start;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
   min-height:112px;
+}
+.tax-title-box{
+  font-size:18px;
+  font-weight:800;
+  color:#111827;
+  padding:4px 10px;
 }
 .top-qr-slot{
   width:112px;
@@ -246,14 +253,6 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 }
 .seller-name{font-weight:700;color:#111827}
 .seller-line{color:#374151}
-.balance-box{
-  margin-top:16px;
-  text-align:right;
-  width:100%;
-}
-.balance-lbl-ar{font-weight:700;color:#111827}
-.balance-lbl-en{color:#4b5563;font-size:11px;direction:ltr;text-align:right}
-.balance-val{font-weight:700;font-size:13px;color:#111827;direction:ltr;text-align:right;margin-top:2px}
 
 .inv-table-wrap{overflow-x:auto}
 .inv-table{
@@ -356,7 +355,7 @@ code.b64-box{
   .item-edit-row{grid-template-columns:1fr 1fr}
   .item-edit-row .desc-field{grid-column:1 / -1}
   .mid-grid{grid-template-columns:1fr;gap:16px;margin-top:16px}
-  .center-meta,.right-brand-col,.seller-info,.balance-box,.client-zone,.client-title-en,.balance-lbl-en,.balance-val{
+  .center-meta,.right-brand-col,.seller-info,.client-zone,.client-title-en{
     text-align:right;
     align-items:flex-start;
   }
@@ -445,10 +444,6 @@ code.b64-box{
       <div class="field">
         <label id="lbl_time">وقت الإصدار (للـ QR)</label>
         <input id="f_time" type="time" step="1" value="18:03:00">
-      </div>
-      <div class="field">
-        <label id="lbl_balance">الرصيد المتبقي</label>
-        <input id="f_balance" type="number" step="any" value="0.00">
       </div>
       <div class="field">
         <label id="lbl_cur">رمز العملة</label>
@@ -719,19 +714,20 @@ const UI = {
     editHint: 'وضع التعديل مفعّل: اضغط على أي نص داخل الفاتورة للكتابة أو التعديل فيه مباشرة، واسحب علامة (⋮⋮) لتحريك أي جزء لمكانه، ثم اضغط "إنهاء التعديل".',
     barTitle: 'إعداد الفاتورة (ZATCA)',
     kStd: 'ضريبية (B2B)', kSmp: 'مبسطة (B2C)',
+    taxTitleStd: 'فاتورة ضريبية',
+    taxTitleSmp: 'فاتورة ضريبية مبسطة',
     lblLogo: 'اللوجو (اختياري)', clearLogo: 'إزالة اللوجو',
     lblSeller: 'اسم الشركة', lblVat: 'السجل الضريبي (15 رقم)',
     lblAddr1: 'العنوان / الحي', lblPhone: 'الهاتف / الرمز',
     lblClient: 'اسم العميل', lblClientAddr: 'عنوان العميل', lblClientVat: 'الرقم الضريبي للعميل',
     lblInv: 'رقم الفاتورة', lblInvDate: 'التاريخ', lblTime: 'وقت الإصدار (للـ QR)',
-    lblBalance: 'الرصيد المتبقي', lblCur: 'رمز العملة',
+    lblCur: 'رمز العملة',
     addRow: '+ إضافة بند', del: 'حذف',
     eDesc: 'الوصف', eQty: 'الكمية', ePrice: 'السعر', eTax: 'الضريبة %',
     clientAr: 'العميل', clientEn: 'Customer',
     invNoAr: 'رقم الفاتورة', invNoEn: 'Invoice number',
     dateAr: 'التاريخ', dateEn: 'Date',
     vatRegAr: 'رقم التسجيل الضريبي',
-    balAr: 'الرصيد المتبقي', balEn: 'Balance',
     thDesc: 'الوصف', thDescSub: 'Line Description',
     thQty: 'الكمية', thQtySub: 'Qty',
     thPrice: 'السعر', thPriceSub: 'Price',
@@ -745,6 +741,7 @@ const UI = {
     errSeller: 'اكتب اسم الشركة.',
     errVat: 'السجل الضريبي يجب أن يكون 15 رقماً يبدأ وينتهي بالرقم 3.',
     errItem: 'تأكد من إدخال وصف وكمية وسعر صحيح لكل بند.',
+    tagTaxTitle: '⋮⋮ فاتورة ضريبية',
     tagQr: '⋮⋮ QR', tagClient: '⋮⋮ العميل', tagMeta: '⋮⋮ الرقم والتاريخ',
     tagBrand: '⋮⋮ اللوجو والبيانات', tagTable: '⋮⋮ الجدول', tagTotals: '⋮⋮ الإجماليات'
   },
@@ -754,19 +751,20 @@ const UI = {
     editHint: 'Mode édition activé : cliquez sur n\'importe quel texte pour le modifier, glissez (⋮⋮) pour déplacer un bloc, puis cliquez sur "Terminer".',
     barTitle: 'Configuration Facture (ZATCA)',
     kStd: 'Fiscale (B2B)', kSmp: 'Simplifiée (B2C)',
+    taxTitleStd: 'Facture fiscale',
+    taxTitleSmp: 'Facture fiscale simplifiée',
     lblLogo: 'Logo (optionnel)', clearLogo: 'Supprimer logo',
     lblSeller: 'Nom de l\'entreprise', lblVat: 'Registre fiscal / TVA (15 chiffres)',
     lblAddr1: 'Adresse / Quartier', lblPhone: 'Téléphone',
     lblClient: 'Nom du client', lblClientAddr: 'Adresse client', lblClientVat: 'TVA client',
     lblInv: 'N° Facture', lblInvDate: 'Date', lblTime: 'Heure (pour QR)',
-    lblBalance: 'Solde restant', lblCur: 'Devise',
+    lblCur: 'Devise',
     addRow: '+ Ajouter ligne', del: 'Suppr.',
     eDesc: 'Désignation', eQty: 'Quantité', ePrice: 'Prix', eTax: 'TVA %',
     clientAr: 'العميل', clientEn: 'Customer',
     invNoAr: 'رقم الفاتورة', invNoEn: 'Invoice number',
     dateAr: 'التاريخ', dateEn: 'Date',
     vatRegAr: 'رقم التسجيل الضريبي',
-    balAr: 'الرصيد المتبقي', balEn: 'Balance',
     thDesc: 'Désignation', thDescSub: 'Line Description',
     thQty: 'Quantité', thQtySub: 'Qty',
     thPrice: 'Prix', thPriceSub: 'Price',
@@ -780,6 +778,7 @@ const UI = {
     errSeller: 'Saisissez le nom de l\'entreprise.',
     errVat: 'Le numéro doit contenir 15 chiffres et commencer/finir par 3.',
     errItem: 'Vérifiez la désignation, la quantité et le prix de chaque ligne.',
+    tagTaxTitle: '⋮⋮ Facture fiscale',
     tagQr: '⋮⋮ QR', tagClient: '⋮⋮ Client', tagMeta: '⋮⋮ N° & Date',
     tagBrand: '⋮⋮ Logo & Infos', tagTable: '⋮⋮ Tableau', tagTotals: '⋮⋮ Totaux'
   }
@@ -856,7 +855,6 @@ function applyLabels() {
   $('lbl_inv').textContent = t.lblInv;
   $('lbl_invDate').textContent = t.lblInvDate;
   $('lbl_time').textContent = t.lblTime;
-  $('lbl_balance').textContent = t.lblBalance;
   $('lbl_cur').textContent = t.lblCur;
   $('add_row_btn').textContent = t.addRow;
   $('lbl_b64').textContent = t.b64Lbl;
@@ -866,6 +864,7 @@ function applyLabels() {
 function renderInvoice() {
   const t = UI[lang];
   const ed = edAttr();
+  const taxTitle = kind === 'simplified' ? t.taxTitleSmp : t.taxTitleStd;
   const seller = $('f_seller').value.trim();
   const vat = $('f_vat').value.replace(/\D/g, '').slice(0, 15);
   const addr1 = $('f_addr1').value.trim();
@@ -877,7 +876,6 @@ function renderInvoice() {
   const invDate = $('f_invDate').value.trim();
   let timeVal = $('f_time').value.trim() || '00:00:00';
   if (timeVal.length === 5) timeVal += ':00';
-  const balance = Number($('f_balance').value || 0);
   const cur = $('f_cur').value.trim() || '﷼';
 
   const errs = [];
@@ -944,7 +942,12 @@ function renderInvoice() {
           <span class="drag-handle">${t.tagQr}</span>
           ${qrSvg}
         </div>
-      ` : ''}
+      ` : '<div></div>'}
+
+      <div class="draggable-part tax-title-box" data-pos-key="taxTitle" style="${posStyle('taxTitle')}">
+        <span class="drag-handle">${t.tagTaxTitle}</span>
+        <span ${ed}>${esc(taxTitle)}</span>
+      </div>
     </div>
 
     <div class="mid-grid">
@@ -979,11 +982,6 @@ function renderInvoice() {
           <div class="seller-line" ${ed}>${esc(addr1)}</div>
           <div class="seller-line" ${ed}>${esc(phone)}</div>
           <div class="seller-line" ${ed}>${vat ? `${t.vatRegAr} ${esc(vat)}` : ''}</div>
-        </div>
-        <div class="balance-box">
-          <div class="balance-lbl-ar" ${ed}>${t.balAr}</div>
-          <div class="balance-lbl-en" ${ed}>${t.balEn}</div>
-          <div class="balance-val" ${ed}>${esc(cur)} ${fmtNum(balance)}</div>
         </div>
       </div>
     </div>
