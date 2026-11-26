@@ -58,6 +58,8 @@ button:disabled{opacity:.6;cursor:wait}
 button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn-pdf{background:#15803d;color:#fff;border-color:#15803d}
+.btn-edit{background:#fef3c7;color:#92400e;border-color:#f59e0b}
+.btn-edit.editing{background:#d97706;color:#fff;border-color:#b45309}
 .btn-clear{background:#f3f4f6;color:#374151;border-color:#d1d5db;padding:5px 10px;font-size:12px}
 .btn-danger{background:#fee2e2;color:#b91c1c;border-color:#fca5a5;padding:4px 9px;font-size:12px}
 
@@ -96,6 +98,17 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   font-weight:700;
   display:none;
 }
+.edit-hint{
+  margin-top:10px;
+  padding:8px 12px;
+  border-radius:7px;
+  background:#fffbeb;
+  border:1px solid #fcd34d;
+  color:#92400e;
+  font-size:12.5px;
+  font-weight:700;
+  display:none;
+}
 
 .invoice-page{
   background:var(--paper);
@@ -103,7 +116,50 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   border:1px solid #d1d5db;
   box-shadow:0 8px 24px rgba(0,0,0,.06);
   position:relative;
+  min-height:680px;
+  overflow:hidden;
 }
+.invoice-page.edit-mode{
+  outline:2px dashed #d97706;
+  outline-offset:-6px;
+  background:#fffdf7;
+}
+.draggable-part{
+  position:relative;
+  transition:box-shadow .15s ease;
+}
+.invoice-page.edit-mode .draggable-part{
+  cursor:grab;
+  touch-action:none;
+  border:1px dashed #f59e0b;
+  border-radius:6px;
+  background:rgba(255,251,235,.82);
+  padding:4px;
+}
+.invoice-page.edit-mode .draggable-part:hover,
+.invoice-page.edit-mode .draggable-part.dragging{
+  cursor:grabbing;
+  border-style:solid;
+  border-color:#b45309;
+  box-shadow:0 6px 18px rgba(180,83,9,.22);
+  z-index:20;
+}
+.drag-badge{
+  display:none;
+  position:absolute;
+  top:-10px;
+  right:6px;
+  background:#b45309;
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  padding:1px 6px;
+  border-radius:4px;
+  pointer-events:none;
+  z-index:25;
+}
+.invoice-page.edit-mode .drag-badge{display:inline-block}
+
 .header-top-bar{
   display:flex;
   justify-content:flex-start;
@@ -304,8 +360,9 @@ code.b64-box{
 @media print{
   body{background:#fff;padding:0}
   .app-shell{max-width:100%;gap:0}
-  .editor-bar,.no-print,.b64-wrap{display:none!important}
-  .invoice-page{border:none;box-shadow:none;padding:0}
+  .editor-bar,.no-print,.b64-wrap,.drag-badge{display:none!important}
+  .invoice-page{border:none;box-shadow:none;padding:0;outline:none!important;background:#fff!important}
+  .invoice-page .draggable-part{border:none!important;background:transparent!important;padding:0!important}
 }
 </style>
 </head>
@@ -318,9 +375,15 @@ code.b64-box{
         <button type="button" id="k_std" class="active">ضريبية (B2B)</button>
         <button type="button" id="k_smp">مبسطة (B2C)</button>
         <button type="button" id="lang_btn">Français</button>
+        <button type="button" id="edit_pos_btn" class="btn-edit">تعديل المواقع</button>
+        <button type="button" id="reset_pos_btn" class="btn-clear">إعادة المواقع</button>
         <button type="button" id="pdf_btn" class="btn-pdf">حفظ PDF</button>
         <button type="button" id="print_btn" class="btn-primary">طباعة</button>
       </div>
+    </div>
+
+    <div class="edit-hint" id="edit_hint">
+      وضع التعديل مفعّل: اسحب أي جزء داخل الفاتورة (QR، العميل، رقم الفاتورة والتاريخ، اللوجو وبيانات الشركة، الجدول، أو الإجماليات) لتحريكه إلى المكان الذي تريده، ثم اضغط "إنهاء التعديل".
     </div>
 
     <div class="grid-form">
@@ -609,16 +672,39 @@ function zatcaPayload(seller, vat, timestamp, total, vatTotal) {
 }
 
 const $ = (id) => document.getElementById(id);
+const POS_STORAGE_KEY = 'zatca_invoice_positions_v1';
 let lang = 'ar';
 let kind = 'standard';
 let logoSrc = '';
+let editMode = false;
+let positions = loadPositions();
 let rows = [
   { desc: '', qty: '1', price: '0', taxRate: '15' }
 ];
 
+function loadPositions() {
+  try {
+    const raw = localStorage.getItem(POS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (_) {
+    return {};
+  }
+}
+function savePositions() {
+  try {
+    localStorage.setItem(POS_STORAGE_KEY, JSON.stringify(positions));
+  } catch (_) {}
+}
+function posStyle(key) {
+  const p = positions[key] || { x: 0, y: 0 };
+  return `transform:translate3d(${Math.round(p.x)}px,${Math.round(p.y)}px,0)`;
+}
+
 const UI = {
   ar: {
     dir: 'rtl', lang: 'ar', toggle: 'Français', pdf: 'حفظ PDF', pdfBusy: 'جاري التحميل...', print: 'طباعة',
+    editPos: 'تعديل المواقع', donePos: 'إنهاء التعديل', resetPos: 'إعادة المواقع',
+    editHint: 'وضع التعديل مفعّل: اسحب أي جزء داخل الفاتورة (QR، العميل، رقم الفاتورة والتاريخ، اللوجو وبيانات الشركة، الجدول، أو الإجماليات) لتحريكه إلى المكان الذي تريده، ثم اضغط "إنهاء التعديل".',
     barTitle: 'إعداد الفاتورة (ZATCA)',
     kStd: 'ضريبية (B2B)', kSmp: 'مبسطة (B2C)',
     lblLogo: 'اللوجو (اختياري)', clearLogo: 'إزالة اللوجو',
@@ -646,10 +732,14 @@ const UI = {
     pageLbl: '1/1', b64Lbl: 'قيمة Base64 المشفرة للـ QR (ZATCA Phase 1):',
     errSeller: 'اكتب اسم الشركة.',
     errVat: 'السجل الضريبي يجب أن يكون 15 رقماً يبدأ وينتهي بالرقم 3.',
-    errItem: 'تأكد من إدخال وصف وكمية وسعر صحيح لكل بند.'
+    errItem: 'تأكد من إدخال وصف وكمية وسعر صحيح لكل بند.',
+    tagQr: 'QR', tagClient: 'العميل', tagMeta: 'الرقم والتاريخ',
+    tagBrand: 'اللوجو والبيانات', tagTable: 'الجدول', tagTotals: 'الإجماليات'
   },
   fr: {
     dir: 'ltr', lang: 'fr', toggle: 'العربية', pdf: 'Enregistrer PDF', pdfBusy: 'Téléchargement...', print: 'Imprimer',
+    editPos: 'Modifier positions', donePos: 'Terminer', resetPos: 'Réinitialiser',
+    editHint: 'Mode édition activé : faites glisser n\'importe quel bloc de la facture pour le déplacer, puis cliquez sur "Terminer".',
     barTitle: 'Configuration Facture (ZATCA)',
     kStd: 'Fiscale (B2B)', kSmp: 'Simplifiée (B2C)',
     lblLogo: 'Logo (optionnel)', clearLogo: 'Supprimer logo',
@@ -677,7 +767,9 @@ const UI = {
     pageLbl: '1/1', b64Lbl: 'Chaîne Base64 encodée pour QR (ZATCA Phase 1) :',
     errSeller: 'Saisissez le nom de l\'entreprise.',
     errVat: 'Le numéro doit contenir 15 chiffres et commencer/finir par 3.',
-    errItem: 'Vérifiez la désignation, la quantité et le prix de chaque ligne.'
+    errItem: 'Vérifiez la désignation, la quantité et le prix de chaque ligne.',
+    tagQr: 'QR', tagClient: 'Client', tagMeta: 'N° & Date',
+    tagBrand: 'Logo & Infos', tagTable: 'Tableau', tagTotals: 'Totaux'
   }
 };
 
@@ -727,6 +819,12 @@ function applyLabels() {
   $('lang_btn').textContent = t.toggle;
   $('pdf_btn').textContent = t.pdf;
   $('print_btn').textContent = t.print;
+  $('edit_pos_btn').textContent = editMode ? t.donePos : t.editPos;
+  $('edit_pos_btn').classList.toggle('editing', editMode);
+  $('reset_pos_btn').textContent = t.resetPos;
+  $('edit_hint').textContent = t.editHint;
+  $('edit_hint').style.display = editMode ? 'block' : 'none';
+  $('invoice_sheet').classList.toggle('edit-mode', editMode);
   $('ui_barTitle').textContent = t.barTitle;
   $('k_std').textContent = t.kStd;
   $('k_smp').textContent = t.kSmp;
@@ -823,11 +921,17 @@ function renderInvoice() {
 
   $('invoice_sheet').innerHTML = `
     <div class="header-top-bar">
-      ${qrSvg ? `<div class="top-qr-slot">${qrSvg}</div>` : ''}
+      ${qrSvg ? `
+        <div class="draggable-part top-qr-slot" data-pos-key="qr" style="${posStyle('qr')}">
+          <span class="drag-badge">${t.tagQr}</span>
+          ${qrSvg}
+        </div>
+      ` : ''}
     </div>
 
     <div class="mid-grid">
-      <div class="client-zone">
+      <div class="draggable-part client-zone" data-pos-key="client" style="${posStyle('client')}">
+        <span class="drag-badge">${t.tagClient}</span>
         <div class="client-title-ar">${t.clientAr}</div>
         <div class="client-title-en">${t.clientEn}</div>
         ${client ? `<div class="client-name">${esc(client)}</div>` : ''}
@@ -835,7 +939,8 @@ function renderInvoice() {
         ${clientVat ? `<div class="client-sub">${t.vatRegAr} ${esc(clientVat)}</div>` : ''}
       </div>
 
-      <div class="center-meta">
+      <div class="draggable-part center-meta" data-pos-key="meta" style="${posStyle('meta')}">
+        <span class="drag-badge">${t.tagMeta}</span>
         <div class="meta-block">
           <div class="meta-ar">${t.invNoAr}</div>
           <div class="meta-en">${t.invNoEn}</div>
@@ -848,7 +953,8 @@ function renderInvoice() {
         </div>
       </div>
 
-      <div class="right-brand-col">
+      <div class="draggable-part right-brand-col" data-pos-key="brand" style="${posStyle('brand')}">
+        <span class="drag-badge">${t.tagBrand}</span>
         ${logoSrc ? `<div class="logo-box"><img src="${logoSrc}" alt="Logo"></div>` : ''}
         <div class="seller-info">
           ${seller ? `<div class="seller-name">${esc(seller)}</div>` : ''}
@@ -864,7 +970,8 @@ function renderInvoice() {
       </div>
     </div>
 
-    <div class="inv-table-wrap">
+    <div class="draggable-part inv-table-wrap" data-pos-key="table" style="${posStyle('table')}">
+      <span class="drag-badge">${t.tagTable}</span>
       <table class="inv-table">
         <thead>
           <tr>
@@ -881,7 +988,8 @@ function renderInvoice() {
     </div>
 
     <div class="bottom-zone">
-      <div class="totals-box">
+      <div class="draggable-part totals-box" data-pos-key="totals" style="${posStyle('totals')}">
+        <span class="drag-badge">${t.tagTotals}</span>
         <div class="total-row">
           <div class="total-left"><span>${fmtNum(sumEx)}</span><span>${esc(cur)}</span></div>
           <div class="total-right">${t.subLbl}</div>
@@ -905,6 +1013,47 @@ function renderInvoice() {
   `;
 }
 
+let activeDrag = null;
+
+$('invoice_sheet').addEventListener('pointerdown', (e) => {
+  if (!editMode) return;
+  const part = e.target.closest('.draggable-part');
+  if (!part) return;
+  const key = part.dataset.posKey;
+  if (!key) return;
+  const current = positions[key] || { x: 0, y: 0 };
+  activeDrag = {
+    el: part,
+    key,
+    startX: e.clientX,
+    startY: e.clientY,
+    origX: current.x,
+    origY: current.y
+  };
+  part.classList.add('dragging');
+  part.setPointerCapture(e.pointerId);
+});
+
+$('invoice_sheet').addEventListener('pointermove', (e) => {
+  if (!activeDrag) return;
+  const dx = e.clientX - activeDrag.startX;
+  const dy = e.clientY - activeDrag.startY;
+  const nextX = activeDrag.origX + dx;
+  const nextY = activeDrag.origY + dy;
+  positions[activeDrag.key] = { x: nextX, y: nextY };
+  activeDrag.el.style.transform = `translate3d(${Math.round(nextX)}px,${Math.round(nextY)}px,0)`;
+});
+
+function finishDrag() {
+  if (!activeDrag) return;
+  activeDrag.el.classList.remove('dragging');
+  savePositions();
+  activeDrag = null;
+}
+
+$('invoice_sheet').addEventListener('pointerup', finishDrag);
+$('invoice_sheet').addEventListener('pointercancel', finishDrag);
+
 async function downloadInvoicePDF() {
   const btn = $('pdf_btn');
   const t = UI[lang];
@@ -914,6 +1063,12 @@ async function downloadInvoicePDF() {
   if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
     window.print();
     return;
+  }
+
+  const prevEdit = editMode;
+  if (prevEdit) {
+    editMode = false;
+    applyLabels();
   }
 
   btn.disabled = true;
@@ -955,8 +1110,23 @@ async function downloadInvoicePDF() {
   } finally {
     btn.disabled = false;
     btn.textContent = t.pdf;
+    if (prevEdit) {
+      editMode = true;
+      applyLabels();
+    }
   }
 }
+
+$('edit_pos_btn').onclick = () => {
+  editMode = !editMode;
+  applyLabels();
+};
+
+$('reset_pos_btn').onclick = () => {
+  positions = {};
+  savePositions();
+  renderInvoice();
+};
 
 $('f_logo').addEventListener('change', (e) => {
   const file = e.target.files && e.target.files[0];
