@@ -3,240 +3,372 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>فاتورة إلكترونية — ZATCA</title>
+<title>فاتورة ضريبية — Tax Invoice</title>
 <style>
 :root{
-  --navy:#0e2439;
-  --navy-2:#173857;
-  --gold:#c89d54;
-  --gold-soft:#fbf6ec;
-  --bg:#eef2f6;
-  --card:#ffffff;
-  --text:#182230;
-  --muted:#5c6b7e;
-  --line:#e2e8f0;
-  --danger:#c92a2a;
+  --ink:#1f2937;
+  --muted:#4b5563;
+  --line:#9ca3af;
+  --light-line:#e5e7eb;
+  --bg:#eef1f5;
+  --paper:#ffffff;
+  --accent:#0f2942;
 }
 *{box-sizing:border-box}
 body{
   margin:0;
-  background:linear-gradient(180deg,#e7edf4 0%,var(--bg) 100%);
-  color:var(--text);
-  font:15px/1.65 system-ui,"Segoe UI",Tahoma,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  font:13.5px/1.55 system-ui,"Segoe UI",Tahoma,sans-serif;
   padding:14px;
 }
-.wrap{max-width:780px;margin:0 auto;display:grid;gap:16px}
-.top-bar{
-  background:linear-gradient(135deg,var(--navy),var(--navy-2));
-  color:#fff;
-  padding:16px 20px;
-  border-radius:16px;
-  border-bottom:3px solid var(--gold);
+.app-shell{max-width:920px;margin:0 auto;display:grid;gap:16px}
+.editor-bar{
+  background:#fff;
+  border:1px solid var(--light-line);
+  border-radius:12px;
+  padding:14px 16px;
+  box-shadow:0 4px 14px rgba(0,0,0,.04);
+}
+.top-toolbar{
   display:flex;
   flex-wrap:wrap;
   justify-content:space-between;
   align-items:center;
-  gap:12px;
-  box-shadow:0 8px 24px rgba(14,36,57,.14);
+  gap:10px;
+  padding-bottom:12px;
+  margin-bottom:12px;
+  border-bottom:1px solid var(--light-line);
 }
-.top-bar h1{margin:0;font-size:19px;font-weight:800}
-.top-bar .sub{margin:2px 0 0;font-size:12.5px;color:#d6e2ee}
-.top-actions{display:flex;flex-wrap:wrap;gap:8px}
-.card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:18px;
-  box-shadow:0 5px 18px rgba(14,36,57,.05);
-}
-h2{
-  font-size:15.5px;
-  margin:20px 0 10px;
-  color:var(--navy);
-  font-weight:800;
-  padding-bottom:6px;
-  border-bottom:1px solid var(--line);
-}
-h2:first-child{margin-top:0}
-label{display:block;color:var(--muted);font-size:12.5px;font-weight:700;margin:10px 0 4px}
-input{
-  width:100%;
-  font:inherit;
-  padding:9px 11px;
-  border:1px solid #cbd5e1;
-  border-radius:9px;
-  background:#fcfdff;
-  color:var(--text);
-}
-input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(14,36,57,.08)}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.row>div{flex:1;min-width:130px}
+.top-toolbar h1{margin:0;font-size:16px;font-weight:800;color:var(--accent)}
+.btn-group{display:flex;flex-wrap:wrap;gap:8px}
 button{
   font:inherit;
-  padding:9px 14px;
+  padding:7px 12px;
   border:1px solid #cbd5e1;
-  border-radius:9px;
+  border-radius:7px;
   background:#fff;
-  color:var(--text);
+  color:var(--ink);
   font-weight:700;
   cursor:pointer;
-  min-height:40px;
 }
-button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-.btn-gold{background:var(--gold);color:var(--navy);border-color:var(--gold)}
-.btn-light{background:#fff;color:var(--navy);border-color:#fff}
-.btn-glass{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.26)}
-.btn-del{background:#ffe3e3;color:var(--danger);border-color:#ffc9c9;padding:5px 10px;min-height:32px;font-size:12px}
-.item{
-  border:1px solid var(--line);
-  background:#fafbfd;
-  border-radius:12px;
-  padding:12px;
-  margin:10px 0;
+button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-danger{background:#fee2e2;color:#b91c1c;border-color:#fca5a5;padding:4px 9px;font-size:12px}
+
+.grid-form{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:10px;
 }
-.item-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.err{
-  background:#fff5f5;
-  color:var(--danger);
-  border:1px solid #ffc9c9;
-  border-radius:10px;
-  padding:12px;
-  margin:14px 0;
-  display:none;
-  font-size:13.5px;
-  font-weight:700;
-}
-.sheet{
-  border:1px solid #d5dfe9;
-  border-radius:16px;
-  padding:22px;
+.field label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:3px}
+.field input{
+  width:100%;
+  font:inherit;
+  padding:7px 9px;
+  border:1px solid #cbd5e1;
+  border-radius:6px;
   background:#fff;
-  box-shadow:0 10px 26px rgba(14,36,57,.06);
 }
-.badge{
-  display:inline-block;
-  background:var(--gold-soft);
-  color:#875f18;
-  border:1px solid #e7cfa0;
-  padding:3px 12px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:800;
-  margin-bottom:6px;
+.items-editor{margin-top:12px;padding-top:12px;border-top:1px dashed #cbd5e1}
+.item-edit-row{
+  display:grid;
+  grid-template-columns:2.2fr .9fr 1fr .9fr auto;
+  gap:8px;
+  align-items:end;
+  margin-bottom:8px;
 }
-.t{text-align:center;font-size:21px;font-weight:800;color:var(--navy)}
-.t2{text-align:center;color:var(--muted);font-size:13px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--navy)}
-.kv{display:flex;justify-content:space-between;gap:12px;padding:4px 0;font-size:14px}
-.kv span{color:var(--muted)}
-.ln{border-top:1px dashed #cbd5e1;padding:8px 0}
-.ln b{display:block;color:var(--navy)}
-.g{
-  font-weight:800;
-  font-size:16.5px;
-  color:var(--navy);
-  border-top:2px solid var(--navy);
-  margin-top:8px;
-  padding-top:10px;
+.err-box{
+  margin-top:10px;
+  padding:9px 12px;
+  border-radius:7px;
+  background:#fef2f2;
+  border:1px solid #fecaca;
+  color:#991b1b;
+  font-size:12.5px;
+  font-weight:700;
+  display:none;
 }
-#qr{display:flex;justify-content:center;margin-top:16px}
-#qr svg{width:190px;height:190px;border:1px solid var(--line);border-radius:10px;padding:6px;background:#fff}
-.note{
-  background:var(--gold-soft);
-  border:1px solid #ecd7ad;
-  border-radius:12px;
-  padding:12px 14px;
-  margin-top:12px;
+
+/* ورقة الفاتورة المشابهة للتصميم الرسمي */
+.invoice-page{
+  background:var(--paper);
+  padding:28px 30px 22px;
+  border:1px solid #d1d5db;
+  box-shadow:0 8px 24px rgba(0,0,0,.06);
+  position:relative;
+}
+.header-split{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+}
+.seller-block{
+  text-align:right;
+  max-width:340px;
   font-size:13px;
-  color:#433824;
+  line-height:1.5;
 }
-code{
+.seller-name{font-weight:700;color:#111827;margin-bottom:2px}
+.seller-line{color:#374151}
+.qr-block{
+  width:128px;
+  height:128px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--light-line);
+  padding:4px;
+  background:#fff;
+}
+.qr-block svg{width:100%;height:100%}
+
+.doc-title-row{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  margin:18px 0 12px;
+  gap:10px;
+}
+.doc-title-en{font-size:18px;font-weight:500;color:#111827;text-align:left;direction:ltr}
+.doc-num{font-size:17px;font-weight:700;color:#111827;text-align:center;direction:ltr}
+.doc-title-ar{font-size:18px;font-weight:700;color:#111827;text-align:right}
+
+.meta-dates-wrap{
+  display:flex;
+  justify-content:center;
+  margin-bottom:14px;
+}
+.meta-dates-table{
+  border-collapse:collapse;
+  font-size:12.5px;
+  min-width:360px;
+}
+.meta-dates-table td{
+  padding:2px 10px;
+  border:none;
+}
+.meta-dates-table .col-en{color:#4b5563;text-align:left;direction:ltr}
+.meta-dates-table .col-val{font-weight:600;color:#111827;text-align:center;direction:ltr}
+.meta-dates-table .col-ar{color:#374151;text-align:right}
+
+.inv-table-wrap{overflow-x:auto}
+.inv-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  min-width:640px;
+}
+.inv-table thead th{
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  padding:7px 6px;
+  font-weight:700;
+  color:#111827;
+  vertical-align:bottom;
+  text-align:center;
+  line-height:1.35;
+}
+.inv-table thead th small{
+  display:block;
+  font-weight:500;
+  color:#4b5563;
+  font-size:11px;
+}
+.inv-table tbody td{
+  padding:9px 6px;
+  border-bottom:1px solid var(--line);
+  vertical-align:top;
+  color:#111827;
+}
+.inv-table tbody td.desc-cell{text-align:right}
+.inv-table tbody td.num-cell{text-align:center;direction:ltr;white-space:nowrap}
+
+.summary-area{
+  display:flex;
+  justify-content:flex-start;
+  margin-top:14px;
+}
+.summary-table{
+  width:100%;
+  max-width:470px;
+  border-collapse:collapse;
+  font-size:12.5px;
+}
+.summary-table td{
+  padding:5px 6px;
+  border-bottom:1px solid var(--light-line);
+}
+.summary-table tr.grand-row td{
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  font-weight:700;
+  font-size:13px;
+  padding:7px 6px;
+}
+.summary-table .s-val{
+  text-align:left;
+  direction:ltr;
+  white-space:nowrap;
+  width:110px;
+}
+.summary-table .s-lbl{
+  text-align:right;
+  color:#111827;
+  line-height:1.4;
+}
+
+.payment-ref{
+  margin-top:18px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  font-size:12.5px;
+}
+.payment-ref .ref-en{color:#374151;direction:ltr}
+.payment-ref .ref-val{font-weight:600;color:#111827;direction:ltr}
+.payment-ref .ref-ar{color:#374151}
+
+.page-footer{
+  margin-top:42px;
+  padding-top:10px;
+  border-top:1px solid #d1d5db;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:14px;
+  font-size:11.5px;
+  color:#374151;
+}
+.footer-left{direction:ltr;text-align:left;line-height:1.45}
+.footer-right{direction:ltr;text-align:right;line-height:1.45}
+
+code.b64-box{
   direction:ltr;
   unicode-bidi:isolate;
   word-break:break-all;
   display:block;
-  font-size:12px;
+  font-size:11.5px;
   background:#f8fafc;
-  border:1px solid var(--line);
-  padding:10px;
-  border-radius:8px;
-  margin-top:8px;
+  border:1px solid var(--light-line);
+  padding:8px 10px;
+  border-radius:6px;
+  margin-top:10px;
 }
-bdi{unicode-bidi:isolate}
+
+@media (max-width:640px){
+  .invoice-page{padding:18px 14px}
+  .item-edit-row{grid-template-columns:1fr 1fr}
+  .item-edit-row .desc-field{grid-column:1 / -1}
+  .doc-title-row{grid-template-columns:1fr;text-align:center}
+  .doc-title-en,.doc-title-ar{text-align:center}
+  .meta-dates-table{min-width:100%}
+  .page-footer{flex-direction:column;align-items:flex-start}
+}
 
 @media print{
   body{background:#fff;padding:0}
-  .wrap{max-width:100%;gap:0}
-  .top-bar,.editor-card,.no-print,#out,.note,.print-hide-h2{display:none!important}
-  .card{border:none;box-shadow:none;padding:0}
-  .sheet{border:none;box-shadow:none;padding:0}
+  .app-shell{max-width:100%;gap:0}
+  .editor-bar,.no-print,.b64-wrap{display:none!important}
+  .invoice-page{border:none;box-shadow:none;padding:12px}
 }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="top-bar">
-    <div>
-      <h1 id="ui_title">فاتورة إلكترونية سعودية مع QR</h1>
-      <p class="sub" id="ui_sub">صيغة هيئة الزكاة والضريبة والجمارك (المرحلة الأولى)</p>
-    </div>
-    <div class="top-actions">
-      <button type="button" class="btn-glass" id="langToggle">Français</button>
-      <button type="button" class="btn-light" id="printBtn">طباعة / PDF</button>
-    </div>
-  </header>
-
-  <section class="card editor-card">
-    <h2 id="ui_kindTitle">نوع الفاتورة</h2>
-    <div class="row">
-      <button id="k1" class="on" type="button">مبسطة (B2C)</button>
-      <button id="k2" type="button">ضريبية كاملة (B2B)</button>
+<div class="app-shell">
+  <section class="editor-bar no-print">
+    <div class="top-toolbar">
+      <h1 id="ui_barTitle">إعداد الفاتورة الضريبية (ZATCA)</h1>
+      <div class="btn-group">
+        <button type="button" id="k_std" class="active">ضريبية (B2B)</button>
+        <button type="button" id="k_smp">مبسطة (B2C)</button>
+        <button type="button" id="lang_btn">Français</button>
+        <button type="button" id="print_btn" class="btn-primary">طباعة / PDF</button>
+      </div>
     </div>
 
-    <label id="ui_rateLbl">نسبة القيمة المضافة</label>
-    <div class="row">
-      <button id="r15" class="on" type="button">15%</button>
-      <button id="r0" type="button">0%</button>
+    <div class="grid-form">
+      <div class="field">
+        <label id="lbl_seller">اسم البائع / المنشأة</label>
+        <input id="f_seller" value="مؤسسة مصنع نبع المدينة لتعبئة المياه">
+      </div>
+      <div class="field">
+        <label id="lbl_addr1">العنوان / الحي</label>
+        <input id="f_addr1" value="حي المدينة الصناعية">
+      </div>
+      <div class="field">
+        <label id="lbl_addr2">المدينة والرمز البريدي</label>
+        <input id="f_addr2" value="المدينة المنورة MED 42527">
+      </div>
+      <div class="field">
+        <label id="lbl_phone">الهاتف / الرمز</label>
+        <input id="f_phone" value="4911 4911">
+      </div>
+      <div class="field">
+        <label id="lbl_country">الدولة</label>
+        <input id="f_country" value="المملكة العربية السعودية">
+      </div>
+      <div class="field">
+        <label id="lbl_client">اسم العميل</label>
+        <input id="f_client" value="شركة نبض الحوت">
+      </div>
+      <div class="field">
+        <label id="lbl_vat">الرقم الضريبي (15 رقم)</label>
+        <input id="f_vat" inputmode="numeric" value="310088323600003">
+      </div>
+      <div class="field">
+        <label id="lbl_inv">رقم الفاتورة</label>
+        <input id="f_inv" value="1380">
+      </div>
+      <div class="field">
+        <label id="lbl_invDate">تاريخ الفاتورة</label>
+        <input id="f_invDate" type="date" value="2026-11-25">
+      </div>
+      <div class="field">
+        <label id="lbl_dueDate">تاريخ الاستحقاق</label>
+        <input id="f_dueDate" type="date" value="2026-11-25">
+      </div>
+      <div class="field">
+        <label id="lbl_supDate">تاريخ التوريد</label>
+        <input id="f_supDate" type="date" value="2026-11-25">
+      </div>
+      <div class="field">
+        <label id="lbl_time">وقت الإصدار (للـ QR)</label>
+        <input id="f_time" type="time" step="1" value="08:49:01">
+      </div>
+      <div class="field">
+        <label id="lbl_payRef">رقم إشارة الدفعة</label>
+        <input id="f_payRef" value="1380">
+      </div>
+      <div class="field">
+        <label id="lbl_email">البريد الإلكتروني</label>
+        <input id="f_email" value="info@awsfactory.com">
+      </div>
+      <div class="field">
+        <label id="lbl_web">الموقع الإلكتروني</label>
+        <input id="f_web" value="https://awsfactory.com">
+      </div>
+      <div class="field">
+        <label id="lbl_cur">رمز العملة</label>
+        <input id="f_cur" value="SR">
+      </div>
     </div>
 
-    <h2 id="ui_sellerTitle">بيانات البائع</h2>
-    <label id="ui_sellerLbl">اسم البائع</label>
-    <input id="seller" value="شركة الأفق للتجارة">
-
-    <label id="ui_vatLbl">الرقم الضريبي (15 رقم، يبدأ وينتهي بـ 3)</label>
-    <input id="vat" inputmode="numeric" value="310122393500003">
-
-    <label id="ui_invLbl">رقم الفاتورة</label>
-    <input id="inv" value="INV-0001">
-
-    <label id="ui_whenLbl">التاريخ والوقت (توقيت الرياض)</label>
-    <div class="row">
-      <div><input id="whenDate" type="date"></div>
-      <div><input id="whenTime" type="time" step="1"></div>
-      <button id="nowBtn" type="button" class="btn-gold" style="flex:0 0 auto">الآن</button>
+    <div class="items-editor">
+      <div id="items_edit_list"></div>
+      <button type="button" id="add_row_btn" class="btn-primary">+ إضافة بند</button>
     </div>
 
-    <div id="buyerBox" style="display:none">
-      <h2 id="ui_buyerTitle">بيانات المشتري</h2>
-      <label id="ui_buyerLbl">اسم المشتري</label>
-      <input id="buyer">
-      <label id="ui_bvatLbl">الرقم الضريبي للمشتري (اختياري)</label>
-      <input id="bvat" inputmode="numeric">
-    </div>
-
-    <h2 id="ui_itemsTitle">البنود</h2>
-    <div id="items"></div>
-    <button id="add" type="button" class="btn-gold">إضافة بند</button>
-
-    <div class="err" id="err"></div>
+    <div class="err-box" id="err_box"></div>
   </section>
 
-  <section class="card">
-    <h2 id="ui_sheetTitle" class="print-hide-h2">الفاتورة</h2>
-    <div class="sheet" id="sheet"></div>
-    <div id="out"></div>
-    <div class="note" id="ui_note">
-      <b>حدود مهمة:</b> الـ QR هنا للمرحلة الأولى (التوليد) وفيه 5 حقول: اسم البائع، الرقم الضريبي، الوقت، الإجمالي شامل الضريبة، قيمة الضريبة. المرحلة الثانية (الربط مع هيئة الزكاة) تحتاج حقولاً إضافية: بصمة الفاتورة، التوقيع الرقمي، المفتاح العام، وشهادة من الهيئة، ونظاماً مسجلاً ومربوطاً بالهيئة. هذه الصفحة لا ترسل شيئاً للهيئة ولا تحفظ أي بيانات. راجع المتطلبات مع محاسب قبل الاستخدام الرسمي.
-    </div>
+  <main class="invoice-page" id="invoice_sheet"></main>
+
+  <section class="editor-bar b64-wrap no-print">
+    <strong id="lbl_b64">قيمة Base64 المشفرة للـ QR (ZATCA Phase 1):</strong>
+    <code class="b64-box" id="b64_out"></code>
   </section>
 </div>
 
@@ -245,435 +377,585 @@ const ECC_PER_BLOCK = [10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 2
 const NUM_BLOCKS = [1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16];
 
 function alignPositions(ver) {
-    if (ver === 1) return [];
-    const n = Math.floor(ver / 7) + 2;
-    const size = ver * 4 + 17;
-    const step = Math.ceil((ver * 4 + 4) / (n * 2 - 2)) * 2;
-    const res = [6];
-    for (let pos = size - 7; res.length < n; pos -= step) res.splice(1, 0, pos);
-    return res;
+  if (ver === 1) return [];
+  const n = Math.floor(ver / 7) + 2;
+  const size = ver * 4 + 17;
+  const step = Math.ceil((ver * 4 + 4) / (n * 2 - 2)) * 2;
+  const res = [6];
+  for (let pos = size - 7; res.length < n; pos -= step) res.splice(1, 0, pos);
+  return res;
 }
-
 function rawModules(ver) {
-    const size = ver * 4 + 17;
-    let r = size * size - 8 * 8 * 3 - 15 * 2 - 1 - (size - 16) * 2;
-    if (ver >= 2) {
-        const n = Math.floor(ver / 7) + 2;
-        r -= (n - 1) * (n - 1) * 25;
-        r -= (n - 2) * 2 * 20;
-        if (ver >= 7) r -= 6 * 3 * 2;
-    }
-    return r;
+  const size = ver * 4 + 17;
+  let r = size * size - 8 * 8 * 3 - 15 * 2 - 1 - (size - 16) * 2;
+  if (ver >= 2) {
+    const n = Math.floor(ver / 7) + 2;
+    r -= (n - 1) * (n - 1) * 25;
+    r -= (n - 2) * 2 * 20;
+    if (ver >= 7) r -= 6 * 3 * 2;
+  }
+  return r;
 }
-
 function dataCodewords(ver) {
-    return Math.floor(rawModules(ver) / 8) - ECC_PER_BLOCK[ver - 1] * NUM_BLOCKS[ver - 1];
+  return Math.floor(rawModules(ver) / 8) - ECC_PER_BLOCK[ver - 1] * NUM_BLOCKS[ver - 1];
 }
-
 function gmul(x, y) {
-    let z = 0;
-    for (let i = 7; i >= 0; i--) {
-        z = (z << 1) ^ ((z >>> 7) * 0x11d);
-        z ^= ((y >>> i) & 1) * x;
-    }
-    return z & 0xff;
+  let z = 0;
+  for (let i = 7; i >= 0; i--) {
+    z = (z << 1) ^ ((z >>> 7) * 0x11d);
+    z ^= ((y >>> i) & 1) * x;
+  }
+  return z & 0xff;
 }
-
 function rsRemainder(data, degree) {
-    const div = new Array(degree).fill(0);
-    div[degree - 1] = 1;
-    let root = 1;
-    for (let i = 0; i < degree; i++) {
-        for (let j = 0; j < degree; j++) {
-            div[j] = gmul(div[j], root);
-            if (j + 1 < degree) div[j] ^= div[j + 1];
-        }
-        root = gmul(root, 2);
+  const div = new Array(degree).fill(0);
+  div[degree - 1] = 1;
+  let root = 1;
+  for (let i = 0; i < degree; i++) {
+    for (let j = 0; j < degree; j++) {
+      div[j] = gmul(div[j], root);
+      if (j + 1 < degree) div[j] ^= div[j + 1];
     }
-    const res = new Array(degree).fill(0);
-    for (const b of data) {
-        const f = b ^ res.shift();
-        res.push(0);
-        div.forEach((c, i) => { res[i] ^= gmul(c, f); });
-    }
-    return res;
+    root = gmul(root, 2);
+  }
+  const res = new Array(degree).fill(0);
+  for (const b of data) {
+    const f = b ^ res.shift();
+    res.push(0);
+    div.forEach((c, i) => { res[i] ^= gmul(c, f); });
+  }
+  return res;
 }
-
 function qrMatrix(bytes) {
-    let ver = 1;
-    for (; ver <= 20; ver++) {
-        const cap = dataCodewords(ver) * 8;
-        const used = 4 + (ver < 10 ? 8 : 16) + bytes.length * 8;
-        if (used <= cap) break;
+  let ver = 1;
+  for (; ver <= 20; ver++) {
+    const cap = dataCodewords(ver) * 8;
+    const used = 4 + (ver < 10 ? 8 : 16) + bytes.length * 8;
+    if (used <= cap) break;
+  }
+  if (ver > 20) throw new Error('too long');
+  const bits = [];
+  const put = (v, n) => { for (let i = n - 1; i >= 0; i--) bits.push((v >>> i) & 1); };
+  put(4, 4);
+  put(bytes.length, ver < 10 ? 8 : 16);
+  bytes.forEach((b) => put(b, 8));
+  const capBits = dataCodewords(ver) * 8;
+  put(0, Math.min(4, capBits - bits.length));
+  while (bits.length % 8) bits.push(0);
+  for (let pad = 0xec; bits.length < capBits; pad ^= 0xec ^ 0x11) put(pad, 8);
+  const data = [];
+  for (let i = 0; i < bits.length; i += 8) {
+    let v = 0;
+    for (let j = 0; j < 8; j++) v = (v << 1) | bits[i + j];
+    data.push(v);
+  }
+  const nb = NUM_BLOCKS[ver - 1];
+  const eccLen = ECC_PER_BLOCK[ver - 1];
+  const raw = Math.floor(rawModules(ver) / 8);
+  const numShort = nb - (raw % nb);
+  const shortLen = Math.floor(raw / nb);
+  const blocks = [];
+  for (let i = 0, k = 0; i < nb; i++) {
+    const dat = data.slice(k, k + shortLen - eccLen + (i < numShort ? 0 : 1));
+    k += dat.length;
+    const ecc = rsRemainder(dat, eccLen);
+    if (i < numShort) dat.push(0);
+    blocks.push(dat.concat(ecc));
+  }
+  const all = [];
+  for (let i = 0; i < blocks[0].length; i++) {
+    blocks.forEach((blk, j) => { if (i !== shortLen - eccLen || j >= numShort) all.push(blk[i]); });
+  }
+  const size = ver * 4 + 17;
+  const m = Array.from({ length: size }, () => new Array(size).fill(false));
+  const fn = Array.from({ length: size }, () => new Array(size).fill(false));
+  const set = (x, y, v) => { m[y][x] = v; fn[y][x] = true; };
+  for (let i = 0; i < size; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
+  const finder = (cx, cy) => {
+    for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
+      const d = Math.max(Math.abs(dx), Math.abs(dy));
+      const x = cx + dx, y = cy + dy;
+      if (x >= 0 && x < size && y >= 0 && y < size) set(x, y, d !== 2 && d !== 4);
     }
-    if (ver > 20) throw new Error('too long');
-    const bits = [];
-    const put = (v, n) => { for (let i = n - 1; i >= 0; i--) bits.push((v >>> i) & 1); };
-    put(4, 4);
-    put(bytes.length, ver < 10 ? 8 : 16);
-    bytes.forEach((b) => put(b, 8));
-    const capBits = dataCodewords(ver) * 8;
-    put(0, Math.min(4, capBits - bits.length));
-    while (bits.length % 8) bits.push(0);
-    for (let pad = 0xec; bits.length < capBits; pad ^= 0xec ^ 0x11) put(pad, 8);
-    const data = [];
-    for (let i = 0; i < bits.length; i += 8) {
-        let v = 0;
-        for (let j = 0; j < 8; j++) v = (v << 1) | bits[i + j];
-        data.push(v);
+  };
+  finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
+  const ap = alignPositions(ver);
+  ap.forEach((cx, i) => ap.forEach((cy, j) => {
+    if ((i === 0 && j === 0) || (i === 0 && j === ap.length - 1) || (i === ap.length - 1 && j === 0)) return;
+    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(cx + dx, cy + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+  }));
+  const drawFormat = (mask) => {
+    const d = (0 << 3) | mask;
+    let rem = d;
+    for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+    const f = ((d << 10) | rem) ^ 0x5412;
+    const bit = (i) => ((f >>> i) & 1) !== 0;
+    for (let i = 0; i <= 5; i++) set(8, i, bit(i));
+    set(8, 7, bit(6)); set(8, 8, bit(7)); set(7, 8, bit(8));
+    for (let i = 9; i < 15; i++) set(14 - i, 8, bit(i));
+    for (let i = 0; i < 8; i++) set(size - 1 - i, 8, bit(i));
+    for (let i = 8; i < 15; i++) set(8, size - 15 + i, bit(i));
+    set(8, size - 8, true);
+  };
+  drawFormat(0);
+  if (ver >= 7) {
+    let rem = ver;
+    for (let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1f25);
+    const v = (ver << 12) | rem;
+    for (let i = 0; i < 18; i++) {
+      const c = ((v >>> i) & 1) !== 0;
+      const a = size - 11 + (i % 3), b = Math.floor(i / 3);
+      set(a, b, c); set(b, a, c);
     }
-    const nb = NUM_BLOCKS[ver - 1];
-    const eccLen = ECC_PER_BLOCK[ver - 1];
-    const raw = Math.floor(rawModules(ver) / 8);
-    const numShort = nb - (raw % nb);
-    const shortLen = Math.floor(raw / nb);
-    const blocks = [];
-    for (let i = 0, k = 0; i < nb; i++) {
-        const dat = data.slice(k, k + shortLen - eccLen + (i < numShort ? 0 : 1));
-        k += dat.length;
-        const ecc = rsRemainder(dat, eccLen);
-        if (i < numShort) dat.push(0);
-        blocks.push(dat.concat(ecc));
+  }
+  let bi = 0;
+  for (let right = size - 1; right >= 1; right -= 2) {
+    if (right === 6) right = 5;
+    for (let vert = 0; vert < size; vert++) for (let j = 0; j < 2; j++) {
+      const x = right - j;
+      const up = ((right + 1) & 2) === 0;
+      const y = up ? size - 1 - vert : vert;
+      if (!fn[y][x] && bi < all.length * 8) {
+        m[y][x] = ((all[bi >>> 3] >>> (7 - (bi & 7))) & 1) !== 0;
+        bi++;
+      }
     }
-    const all = [];
-    for (let i = 0; i < blocks[0].length; i++) {
-        blocks.forEach((blk, j) => { if (i !== shortLen - eccLen || j >= numShort) all.push(blk[i]); });
-    }
-    const size = ver * 4 + 17;
-    const m = Array.from({ length: size }, () => new Array(size).fill(false));
-    const fn = Array.from({ length: size }, () => new Array(size).fill(false));
-    const set = (x, y, v) => { m[y][x] = v; fn[y][x] = true; };
-    for (let i = 0; i < size; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
-    const finder = (cx, cy) => {
-        for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
-            const d = Math.max(Math.abs(dx), Math.abs(dy));
-            const x = cx + dx, y = cy + dy;
-            if (x >= 0 && x < size && y >= 0 && y < size) set(x, y, d !== 2 && d !== 4);
-        }
+  }
+  const masks = [
+    (x, y) => (x + y) % 2 === 0,
+    (_x, y) => y % 2 === 0,
+    (x) => x % 3 === 0,
+    (x, y) => (x + y) % 3 === 0,
+    (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0,
+    (x, y) => ((x * y) % 2) + ((x * y) % 3) === 0,
+    (x, y) => (((x * y) % 2) + ((x * y) % 3)) % 2 === 0,
+    (x, y) => (((x + y) % 2) + ((x * y) % 3)) % 2 === 0,
+  ];
+  const applyMask = (k) => {
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (!fn[y][x] && masks[k](x, y)) m[y][x] = !m[y][x];
+  };
+  const penalty = () => {
+    let p = 0;
+    const line = (get) => {
+      let run = 1;
+      for (let i = 1; i < size; i++) {
+        if (get(i) === get(i - 1)) run++;
+        else { if (run >= 5) p += 3 + run - 5; run = 1; }
+      }
+      if (run >= 5) p += 3 + run - 5;
+      const s = Array.from({ length: size }, (_, i) => (get(i) ? '1' : '0')).join('');
+      for (const pat of ['00001011101', '10111010000']) {
+        let at = s.indexOf(pat);
+        while (at >= 0) { p += 40; at = s.indexOf(pat, at + 1); }
+      }
     };
-    finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
-    const ap = alignPositions(ver);
-    ap.forEach((cx, i) => ap.forEach((cy, j) => {
-        if ((i === 0 && j === 0) || (i === 0 && j === ap.length - 1) || (i === ap.length - 1 && j === 0)) return;
-        for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(cx + dx, cy + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
-    }));
-    const drawFormat = (mask) => {
-        const d = (0 << 3) | mask;
-        let rem = d;
-        for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
-        const f = ((d << 10) | rem) ^ 0x5412;
-        const bit = (i) => ((f >>> i) & 1) !== 0;
-        for (let i = 0; i <= 5; i++) set(8, i, bit(i));
-        set(8, 7, bit(6)); set(8, 8, bit(7)); set(7, 8, bit(8));
-        for (let i = 9; i < 15; i++) set(14 - i, 8, bit(i));
-        for (let i = 0; i < 8; i++) set(size - 1 - i, 8, bit(i));
-        for (let i = 8; i < 15; i++) set(8, size - 15 + i, bit(i));
-        set(8, size - 8, true);
-    };
-    drawFormat(0);
-    if (ver >= 7) {
-        let rem = ver;
-        for (let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1f25);
-        const v = (ver << 12) | rem;
-        for (let i = 0; i < 18; i++) {
-            const c = ((v >>> i) & 1) !== 0;
-            const a = size - 11 + (i % 3), b = Math.floor(i / 3);
-            set(a, b, c); set(b, a, c);
-        }
+    for (let y = 0; y < size; y++) line((i) => m[y][i]);
+    for (let x = 0; x < size; x++) line((i) => m[i][x]);
+    for (let y = 0; y < size - 1; y++) for (let x = 0; x < size - 1; x++) {
+      const c = m[y][x];
+      if (c === m[y][x + 1] && c === m[y + 1][x] && c === m[y + 1][x + 1]) p += 3;
     }
-    let bi = 0;
-    for (let right = size - 1; right >= 1; right -= 2) {
-        if (right === 6) right = 5;
-        for (let vert = 0; vert < size; vert++) for (let j = 0; j < 2; j++) {
-            const x = right - j;
-            const up = ((right + 1) & 2) === 0;
-            const y = up ? size - 1 - vert : vert;
-            if (!fn[y][x] && bi < all.length * 8) {
-                m[y][x] = ((all[bi >>> 3] >>> (7 - (bi & 7))) & 1) !== 0;
-                bi++;
-            }
-        }
-    }
-    const masks = [
-        (x, y) => (x + y) % 2 === 0,
-        (_x, y) => y % 2 === 0,
-        (x) => x % 3 === 0,
-        (x, y) => (x + y) % 3 === 0,
-        (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0,
-        (x, y) => ((x * y) % 2) + ((x * y) % 3) === 0,
-        (x, y) => (((x * y) % 2) + ((x * y) % 3)) % 2 === 0,
-        (x, y) => (((x + y) % 2) + ((x * y) % 3)) % 2 === 0,
-    ];
-    const applyMask = (k) => {
-        for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (!fn[y][x] && masks[k](x, y)) m[y][x] = !m[y][x];
-    };
-    const penalty = () => {
-        let p = 0;
-        const line = (get) => {
-            let run = 1;
-            for (let i = 1; i < size; i++) {
-                if (get(i) === get(i - 1)) run++;
-                else { if (run >= 5) p += 3 + run - 5; run = 1; }
-            }
-            if (run >= 5) p += 3 + run - 5;
-            const s = Array.from({ length: size }, (_, i) => (get(i) ? '1' : '0')).join('');
-            for (const pat of ['00001011101', '10111010000']) {
-                let at = s.indexOf(pat);
-                while (at >= 0) { p += 40; at = s.indexOf(pat, at + 1); }
-            }
-        };
-        for (let y = 0; y < size; y++) line((i) => m[y][i]);
-        for (let x = 0; x < size; x++) line((i) => m[i][x]);
-        for (let y = 0; y < size - 1; y++) for (let x = 0; x < size - 1; x++) {
-            const c = m[y][x];
-            if (c === m[y][x + 1] && c === m[y + 1][x] && c === m[y + 1][x + 1]) p += 3;
-        }
-        let dark = 0;
-        m.forEach((r) => r.forEach((c) => { if (c) dark++; }));
-        p += Math.floor(Math.abs(dark * 20 - size * size * 10) / (size * size)) * 10;
-        return p;
-    };
-    let best = 0, bestP = Infinity;
-    for (let k = 0; k < 8; k++) {
-        applyMask(k); drawFormat(k);
-        const p = penalty();
-        if (p < bestP) { best = k; bestP = p; }
-        applyMask(k);
-    }
-    applyMask(best); drawFormat(best);
-    return m;
+    let dark = 0;
+    m.forEach((r) => r.forEach((c) => { if (c) dark++; }));
+    p += Math.floor(Math.abs(dark * 20 - size * size * 10) / (size * size)) * 10;
+    return p;
+  };
+  let best = 0, bestP = Infinity;
+  for (let k = 0; k < 8; k++) {
+    applyMask(k); drawFormat(k);
+    const p = penalty();
+    if (p < bestP) { best = k; bestP = p; }
+    applyMask(k);
+  }
+  applyMask(best); drawFormat(best);
+  return m;
 }
 
-function utf8(s) { return Array.from(new TextEncoder().encode(s)); }
-function tlv(tag, value) { const v = utf8(value); return [tag, v.length, ...v]; }
+function utf8(s) { return Array.from(new TextEncoder().encode(String(s ?? ''))); }
+function tlv(tag, value) {
+  const v = utf8(value);
+  return [tag, v.length, ...v];
+}
 function zatcaPayload(seller, vat, timestamp, total, vatTotal) {
-    const bytes = [...tlv(1, seller), ...tlv(2, vat), ...tlv(3, timestamp), ...tlv(4, total), ...tlv(5, vatTotal)];
-    let bin = '';
-    bytes.forEach((b) => { bin += String.fromCharCode(b); });
-    return btoa(bin);
+  const bytes = [...tlv(1, seller), ...tlv(2, vat), ...tlv(3, timestamp), ...tlv(4, total), ...tlv(5, vatTotal)];
+  let bin = '';
+  bytes.forEach((b) => { bin += String.fromCharCode(b); });
+  return btoa(bin);
 }
 
-const TXT = {
+const $ = (id) => document.getElementById(id);
+let lang = 'ar';
+let kind = 'standard';
+let rows = [
+  { desc: 'شيرنك 20 قارورة 330 مل', qty: '500', price: '4', taxRate: '15', taxLabel: 'Sales Tax' }
+];
+
+const UI = {
   ar: {
     dir: 'rtl', lang: 'ar', toggle: 'Français', print: 'طباعة / PDF',
-    title: 'فاتورة إلكترونية سعودية مع QR',
-    sub: 'صيغة هيئة الزكاة والضريبة والجمارك (المرحلة الأولى)',
-    kindTitle: 'نوع الفاتورة', k1: 'مبسطة (B2C)', k2: 'ضريبية كاملة (B2B)',
-    rateLbl: 'نسبة القيمة المضافة',
-    sellerTitle: 'بيانات البائع', sellerLbl: 'اسم البائع',
-    vatLbl: 'الرقم الضريبي (15 رقم، يبدأ وينتهي بـ 3)',
-    invLbl: 'رقم الفاتورة', whenLbl: 'التاريخ والوقت (توقيت الرياض)', now: 'الآن',
-    buyerTitle: 'بيانات المشتري', buyerLbl: 'اسم المشتري', bvatLbl: 'الرقم الضريبي للمشتري (اختياري)',
-    itemsTitle: 'البنود', add: 'إضافة بند', itemLabel: 'بند', del: 'حذف',
-    desc: 'الوصف', qty: 'الكمية', price: 'سعر الوحدة قبل الضريبة',
-    sheetTitle: 'الفاتورة',
-    simpTitle: 'فاتورة ضريبية مبسطة', stdTitle: 'فاتورة ضريبية',
-    simpSub: 'Tax Invoice (Simplified)', stdSub: 'Tax Invoice',
-    invNo: 'رقم الفاتورة', dateLbl: 'التاريخ', sellerLblOut: 'البائع', vatLblOut: 'الرقم الضريبي',
-    buyerLblOut: 'المشتري', bvatLblOut: 'الرقم الضريبي للمشتري',
-    netLbl: 'الإجمالي بدون ضريبة', vatAmtLbl: 'ضريبة القيمة المضافة', totalLbl: 'الإجمالي شامل الضريبة',
-    cur: 'ر.س', qrErr: 'صحح البيانات علشان يظهر الـ QR', qrOut: 'نص الـ QR (Base64)',
+    barTitle: 'إعداد الفاتورة الضريبية (ZATCA)',
+    kStd: 'ضريبية (B2B)', kSmp: 'مبسطة (B2C)',
+    lblSeller: 'اسم البائع / المنشأة', lblAddr1: 'العنوان / الحي', lblAddr2: 'المدينة والرمز البريدي',
+    lblPhone: 'الهاتف / الرمز', lblCountry: 'الدولة', lblClient: 'اسم العميل',
+    lblVat: 'الرقم الضريبي (15 رقم)', lblInv: 'رقم الفاتورة',
+    lblInvDate: 'تاريخ الفاتورة', lblDueDate: 'تاريخ الاستحقاق', lblSupDate: 'تاريخ التوريد',
+    lblTime: 'وقت الإصدار (للـ QR)', lblPayRef: 'رقم إشارة الدفعة',
+    lblEmail: 'البريد الإلكتروني', lblWeb: 'الموقع الإلكتروني', lblCur: 'رمز العملة',
+    addRow: '+ إضافة بند', del: 'حذف',
+    eDesc: 'الوصف', eQty: 'الكمية', ePrice: 'سعر الوحدة', eTax: 'الضريبة %',
+    titleEn: 'Tax Invoice', titleAr: 'فاتورة ضريبية',
+    simpEn: 'Simplified Tax Invoice', simpAr: 'فاتورة ضريبية مبسطة',
+    invDateEn: 'Invoice Date:', invDateAr: 'تاريخ الفاتورة :',
+    dueDateEn: 'Due Date:', dueDateAr: 'تاريخ الاستحقاق :',
+    supDateEn: 'Supply Date:', supDateAr: 'تاريخ التوريد :',
+    thDesc: 'الوصف', thDescSub: 'Description',
+    thQty: 'الكمية', thQtySub: 'Quantity',
+    thPrice: 'سعر الوحدة', thPriceSub: 'Unit price',
+    thTax: 'نسبة الضريبة', thTaxSub: 'Taxes',
+    thSubEx: 'المجموع الفرعي بدون الضريبة', thSubExSub: 'Subtotal (exclusive of VAT)',
+    thVatAmt: 'قيمة الضريبة', thVatAmtSub: 'VAT Amount',
+    thSubIn: 'المجموع شامل ضريبة القيمة المضافة', thSubInSub: 'Subtotal (inclusive of VAT)',
+    taxableLbl: 'Invoice Taxable Amount / المبلغ الخاضع للضريبة غير شامل ضريبة القيمة المضافة',
+    vatTaxesLbl: 'VAT Taxes',
+    grandLbl: 'Invoice Total (inclusive of VAT) / إجمالي قيمة الفاتورة شامل ضريبة القيمة المضافة',
+    payEn: 'Payment Reference:', payAr: 'رقم إشارة الدفعة:',
+    pageLbl: 'Page 1/1', b64Lbl: 'قيمة Base64 المشفرة للـ QR (ZATCA Phase 1):',
     errSeller: 'اكتب اسم البائع.',
-    errVat: 'الرقم الضريبي لازم يكون 15 رقم، يبدأ بـ 3 وينتهي بـ 3.',
-    errWhen: 'اختر التاريخ والوقت.',
-    errBuyer: 'الفاتورة الضريبية الكاملة لازم فيها اسم المشتري.',
-    errBvat: 'الرقم الضريبي للمشتري غير صحيح.',
-    errItem: 'كل بند لازم يكون له وصف وكمية وسعر صحيحين.',
-    errLong: 'البيانات طويلة زيادة على الـ QR.'
+    errVat: 'الرقم الضريبي يجب أن يكون 15 رقماً يبدأ وينتهي بالرقم 3.',
+    errItem: 'تأكد من إدخال وصف وكمية وسعر صحيح لكل بند.'
   },
   fr: {
     dir: 'ltr', lang: 'fr', toggle: 'العربية', print: 'Imprimer / PDF',
-    title: 'Facture Électronique avec QR — ZATCA',
-    sub: 'Format ZATCA (Phase 1 — Génération QR)',
-    kindTitle: 'Type de facture', k1: 'Simplifiée (B2C)', k2: 'Fiscale complète (B2B)',
-    rateLbl: 'Taux de TVA',
-    sellerTitle: 'Infos vendeur', sellerLbl: 'Nom du vendeur',
-    vatLbl: 'Numéro de TVA (15 chiffres, débute et finit par 3)',
-    invLbl: 'Numéro de facture', whenLbl: 'Date et heure (Heure de Riyad)', now: 'Maintenant',
-    buyerTitle: 'Infos acheteur', buyerLbl: 'Nom de l\'acheteur', bvatLbl: 'N° TVA acheteur (optionnel)',
-    itemsTitle: 'Articles', add: 'Ajouter un article', itemLabel: 'Article', del: 'Suppr.',
-    desc: 'Désignation', qty: 'Quantité', price: 'Prix unitaire HT',
-    sheetTitle: 'Aperçu de la facture',
-    simpTitle: 'Facture fiscale simplifiée', stdTitle: 'Facture fiscale',
-    simpSub: 'Tax Invoice (Simplified)', stdSub: 'Tax Invoice',
-    invNo: 'N° Facture', dateLbl: 'Date', sellerLblOut: 'Vendeur', vatLblOut: 'N° TVA',
-    buyerLblOut: 'Acheteur', bvatLblOut: 'N° TVA acheteur',
-    netLbl: 'Total HT', vatAmtLbl: 'Montant TVA', totalLbl: 'Total TTC',
-    cur: 'SAR', qrErr: 'Corrigez les champs pour afficher le QR', qrOut: 'Texte QR (Base64)',
+    barTitle: 'Configuration Facture Fiscale (ZATCA)',
+    kStd: 'Fiscale (B2B)', kSmp: 'Simplifiée (B2C)',
+    lblSeller: 'Nom du vendeur', lblAddr1: 'Adresse / Quartier', lblAddr2: 'Ville & Code postal',
+    lblPhone: 'Téléphone', lblCountry: 'Pays', lblClient: 'Nom du client',
+    lblVat: 'N° TVA (15 chiffres)', lblInv: 'N° Facture',
+    lblInvDate: 'Date facture', lblDueDate: 'Date d\'échéance', lblSupDate: 'Date de livraison',
+    lblTime: 'Heure (pour QR)', lblPayRef: 'Référence paiement',
+    lblEmail: 'E-mail', lblWeb: 'Site web', lblCur: 'Devise',
+    addRow: '+ Ajouter ligne', del: 'Suppr.',
+    eDesc: 'Désignation', eQty: 'Quantité', ePrice: 'Prix unitaire', eTax: 'TVA %',
+    titleEn: 'Tax Invoice', titleAr: 'فاتورة ضريبية',
+    simpEn: 'Simplified Tax Invoice', simpAr: 'فاتورة ضريبية مبسطة',
+    invDateEn: 'Invoice Date:', invDateAr: 'تاريخ الفاتورة :',
+    dueDateEn: 'Due Date:', dueDateAr: 'تاريخ الاستحقاق :',
+    supDateEn: 'Supply Date:', supDateAr: 'تاريخ التوريد :',
+    thDesc: 'Désignation', thDescSub: 'Description',
+    thQty: 'Quantité', thQtySub: 'Quantity',
+    thPrice: 'Prix unitaire', thPriceSub: 'Unit price',
+    thTax: 'Taux TVA', thTaxSub: 'Taxes',
+    thSubEx: 'Sous-total HT', thSubExSub: 'Subtotal (exclusive of VAT)',
+    thVatAmt: 'Montant TVA', thVatAmtSub: 'VAT Amount',
+    thSubIn: 'Total TTC', thSubInSub: 'Subtotal (inclusive of VAT)',
+    taxableLbl: 'Invoice Taxable Amount / المبلغ الخاضع للضريبة غير شامل ضريبة القيمة المضافة',
+    vatTaxesLbl: 'VAT Taxes',
+    grandLbl: 'Invoice Total (inclusive of VAT) / إجمالي قيمة الفاتورة شامل ضريبة القيمة المضافة',
+    payEn: 'Payment Reference:', payAr: 'رقم إشارة الدفعة:',
+    pageLbl: 'Page 1/1', b64Lbl: 'Chaîne Base64 encodée pour QR (ZATCA Phase 1) :',
     errSeller: 'Saisissez le nom du vendeur.',
-    errVat: 'Le N° de TVA doit contenir 15 chiffres et commencer/finir par 3.',
-    errWhen: 'Choisissez la date et l\'heure.',
-    errBuyer: 'La facture fiscale complète exige le nom de l\'acheteur.',
-    errBvat: 'Le N° de TVA de l\'acheteur est invalide.',
-    errItem: 'Chaque article doit avoir une désignation, quantité et prix valides.',
-    errLong: 'Les données dépassent la capacité du QR.'
+    errVat: 'Le numéro de TVA doit contenir 15 chiffres et commencer/finir par 3.',
+    errItem: 'Vérifiez la désignation, la quantité et le prix de chaque ligne.'
   }
 };
 
-var $ = function(i){return document.getElementById(i)};
-var lang = 'ar', kind = 'simplified', rate = 15, items = [{n:'خدمة استشارية', q:'1', p:'1000'}];
-
-function setNowRiyadh(){
-  var d = new Date(Date.now() + 3 * 3600 * 1000);
-  var iso = d.toISOString();
-  $('whenDate').value = iso.slice(0, 10);
-  $('whenTime').value = iso.slice(11, 19);
-}
-setNowRiyadh();
-$('nowBtn').onclick = function(){ setNowRiyadh(); update(); };
-
-function cents(s){
-  s = String(s).replace(/[٠-٩]/g, function(c){return '٠١٢٣٤٥٦٧٨٩'.indexOf(c)}).replace(',', '.');
-  var n = Number(s);
-  return isFinite(n) && n >= 0 && s.trim() !== '' ? Math.round(n * 100) : NaN;
-}
-function money(c){return (c / 100).toFixed(2)}
-function esc(s){return String(s).replace(/[&<>"]/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-
-function renderItems(){
-  var t = TXT[lang], h = '';
-  items.forEach(function(it, i){
-    h += '<div class="item"><div class="item-top"><b>' + t.itemLabel + ' ' + (i + 1) + '</b>' +
-      (items.length > 1 ? '<button type="button" class="btn-del" data-del="' + i + '">' + t.del + '</button>' : '') +
-      '</div><label>' + t.desc + '</label><input data-f="n" data-i="' + i + '" value="' + esc(it.n) + '">' +
-      '<div class="row"><div><label>' + t.qty + '</label><input inputmode="decimal" data-f="q" data-i="' + i + '" value="' + esc(it.q) + '"></div>' +
-      '<div><label>' + t.price + '</label><input inputmode="decimal" data-f="p" data-i="' + i + '" value="' + esc(it.p) + '"></div></div></div>';
-  });
-  $('items').innerHTML = h;
+function fmtDateDMY(isoDate) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(isoDate || '').trim());
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : (isoDate || '');
 }
 
-function applyLangUI(){
-  var t = TXT[lang];
+function fmtNum(n) {
+  return Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function fmtFixed2(n) {
+  return Number(n || 0).toFixed(2);
+}
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+
+function renderItemsEditor() {
+  const t = UI[lang];
+  $('items_edit_list').innerHTML = rows.map((r, i) => `
+    <div class="item-edit-row">
+      <div class="field desc-field">
+        <label>${t.eDesc}</label>
+        <input data-row="${i}" data-key="desc" value="${esc(r.desc)}">
+      </div>
+      <div class="field">
+        <label>${t.eQty}</label>
+        <input type="number" step="any" data-row="${i}" data-key="qty" value="${esc(r.qty)}">
+      </div>
+      <div class="field">
+        <label>${t.ePrice}</label>
+        <input type="number" step="any" data-row="${i}" data-key="price" value="${esc(r.price)}">
+      </div>
+      <div class="field">
+        <label>${t.eTax}</label>
+        <input type="number" step="any" data-row="${i}" data-key="taxRate" value="${esc(r.taxRate)}">
+      </div>
+      <div>
+        ${rows.length > 1 ? `<button type="button" class="btn-danger" data-del="${i}">${t.del}</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function applyLabels() {
+  const t = UI[lang];
   document.documentElement.lang = t.lang;
   document.documentElement.dir = t.dir;
-  $('langToggle').textContent = t.toggle;
-  $('printBtn').textContent = t.print;
-  $('ui_title').textContent = t.title;
-  $('ui_sub').textContent = t.sub;
-  $('ui_kindTitle').textContent = t.kindTitle;
-  $('k1').textContent = t.k1;
-  $('k2').textContent = t.k2;
-  $('ui_rateLbl').textContent = t.rateLbl;
-  $('ui_sellerTitle').textContent = t.sellerTitle;
-  $('ui_sellerLbl').textContent = t.sellerLbl;
-  $('ui_vatLbl').textContent = t.vatLbl;
-  $('ui_invLbl').textContent = t.invLbl;
-  $('ui_whenLbl').textContent = t.whenLbl;
-  $('nowBtn').textContent = t.now;
-  $('ui_buyerTitle').textContent = t.buyerTitle;
-  $('ui_buyerLbl').textContent = t.buyerLbl;
-  $('ui_bvatLbl').textContent = t.bvatLbl;
-  $('ui_itemsTitle').textContent = t.itemsTitle;
-  $('add').textContent = t.add;
-  $('ui_sheetTitle').textContent = t.sheetTitle;
+  $('lang_btn').textContent = t.toggle;
+  $('print_btn').textContent = t.print;
+  $('ui_barTitle').textContent = t.barTitle;
+  $('k_std').textContent = t.kStd;
+  $('k_smp').textContent = t.kSmp;
+  $('lbl_seller').textContent = t.lblSeller;
+  $('lbl_addr1').textContent = t.lblAddr1;
+  $('lbl_addr2').textContent = t.lblAddr2;
+  $('lbl_phone').textContent = t.lblPhone;
+  $('lbl_country').textContent = t.lblCountry;
+  $('lbl_client').textContent = t.lblClient;
+  $('lbl_vat').textContent = t.lblVat;
+  $('lbl_inv').textContent = t.lblInv;
+  $('lbl_invDate').textContent = t.lblInvDate;
+  $('lbl_dueDate').textContent = t.lblDueDate;
+  $('lbl_supDate').textContent = t.lblSupDate;
+  $('lbl_time').textContent = t.lblTime;
+  $('lbl_payRef').textContent = t.lblPayRef;
+  $('lbl_email').textContent = t.lblEmail;
+  $('lbl_web').textContent = t.lblWeb;
+  $('lbl_cur').textContent = t.lblCur;
+  $('add_row_btn').textContent = t.addRow;
+  $('lbl_b64').textContent = t.b64Lbl;
 }
 
-function update(){
-  var t = TXT[lang];
-  var errs = [], seller = $('seller').value.trim(), vat = $('vat').value.replace(/\D/g, '').slice(0, 15),
-      buyer = $('buyer').value.trim(), bvat = $('bvat').value.replace(/\D/g, '');
-  var dVal = $('whenDate').value, tVal = ($('whenTime').value || '00:00:00');
-  if (tVal.length === 5) tVal += ':00';
-  var when = (/^\d{4}-\d{2}-\d{2}$/.test(dVal) && /^\d{2}:\d{2}:\d{2}$/.test(tVal)) ? (dVal + 'T' + tVal) : '';
+function renderInvoice() {
+  const t = UI[lang];
+  const seller = $('f_seller').value.trim();
+  const addr1 = $('f_addr1').value.trim();
+  const addr2 = $('f_addr2').value.trim();
+  const phone = $('f_phone').value.trim();
+  const country = $('f_country').value.trim();
+  const client = $('f_client').value.trim();
+  const vat = $('f_vat').value.replace(/\D/g, '').slice(0, 15);
+  const invNo = $('f_inv').value.trim();
+  const invDate = $('f_invDate').value.trim();
+  const dueDate = $('f_dueDate').value.trim();
+  const supDate = $('f_supDate').value.trim();
+  let timeVal = $('f_time').value.trim() || '00:00:00';
+  if (timeVal.length === 5) timeVal += ':00';
+  const payRef = $('f_payRef').value.trim();
+  const email = $('f_email').value.trim();
+  const web = $('f_web').value.trim();
+  const cur = $('f_cur').value.trim() || 'SR';
 
+  const errs = [];
   if (!seller) errs.push(t.errSeller);
   if (!/^3\d{13}3$/.test(vat)) errs.push(t.errVat);
-  if (!when) errs.push(t.errWhen);
-  if (kind === 'standard') {
-    if (!buyer) errs.push(t.errBuyer);
-    if (bvat && !/^3\d{13}3$/.test(bvat)) errs.push(t.errBvat);
-  }
 
-  var net = 0, bad = false, lines = '';
-  items.forEach(function(it){
-    var q = Number(it.q), p = cents(it.p), ok = it.n.trim() && isFinite(q) && q > 0 && isFinite(p);
-    if (!ok) bad = true;
-    var l = ok ? Math.round(q * p) : 0;
-    net += l;
-    lines += '<div class="ln"><b>' + esc(it.n || '-') + '</b><div class="kv"><span><bdi>' + esc(it.q) + ' × ' + (ok ? money(p) : '-') + '</bdi></span><b><bdi>' + money(l) + '</bdi></b></div></div>';
-  });
-  if (!items.length || bad) errs.push(t.errItem);
+  let sumEx = 0;
+  let sumVat = 0;
+  let sumIn = 0;
 
-  var vatAmt = Math.round(net * rate / 100), total = net + vatAmt, svg = '', payload = '';
+  const lineHtml = rows.map((r) => {
+    const q = Number(r.qty);
+    const p = Number(r.price);
+    const tr = Number(r.taxRate);
+    const valid = String(r.desc || '').trim() !== '' && isFinite(q) && q > 0 && isFinite(p) && p >= 0 && isFinite(tr) && tr >= 0;
+    if (!valid) errs.push(t.errItem);
+
+    const ex = valid ? (q * p) : 0;
+    const vAmt = valid ? (ex * (tr / 100)) : 0;
+    const inc = ex + vAmt;
+
+    sumEx += ex;
+    sumVat += vAmt;
+    sumIn += inc;
+
+    return `
+      <tr>
+        <td class="desc-cell">${esc(r.desc || '-')}</td>
+        <td class="num-cell">${fmtNum(q)} Units</td>
+        <td class="num-cell">${fmtNum(p)} ${esc(cur)}</td>
+        <td class="num-cell">${esc(r.taxLabel || 'Sales Tax')}<br>${tr}%</td>
+        <td class="num-cell">${fmtNum(ex)} ${esc(cur)}</td>
+        <td class="num-cell">${fmtNum(vAmt)} ${esc(cur)}</td>
+        <td class="num-cell">${fmtNum(inc)} ${esc(cur)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  const errBox = $('err_box');
+  errBox.style.display = errs.length ? 'block' : 'none';
+  errBox.textContent = errs.join(' ');
+
+  let qrSvg = '';
+  let b64 = '';
   if (!errs.length) {
-    try {
-      payload = zatcaPayload(seller, vat, when + 'Z', money(total), money(vatAmt));
-      var m = qrMatrix(utf8(payload)), n = m.length + 8, p = '';
-      m.forEach(function(r, y){
-        r.forEach(function(c, x){
-          if (c) p += 'M' + (x + 4) + ' ' + (y + 4) + 'h1v1h-1z';
-        });
+    const isoStamp = `${invDate || '2026-11-25'}T${timeVal}Z`;
+    b64 = zatcaPayload(seller, vat, isoStamp, fmtFixed2(sumIn), fmtFixed2(sumVat));
+    const mat = qrMatrix(utf8(b64));
+    const sz = mat.length + 6;
+    let dPath = '';
+    mat.forEach((row, y) => {
+      row.forEach((cell, x) => {
+        if (cell) dPath += `M${x + 3} ${y + 3}h1v1h-1z`;
       });
-      svg = '<svg viewBox="0 0 ' + n + ' ' + n + '" shape-rendering="crispEdges"><rect width="' + n + '" height="' + n + '" fill="#fff"/><path d="' + p + '"/></svg>';
-    } catch (e) {
-      errs.push(t.errLong);
-    }
+    });
+    qrSvg = `<svg viewBox="0 0 ${sz} ${sz}" shape-rendering="crispEdges"><rect width="${sz}" height="${sz}" fill="#fff"/><path d="${dPath}" fill="#111827"/></svg>`;
   }
 
-  var e = $('err');
-  e.style.display = errs.length ? 'block' : 'none';
-  e.textContent = errs.join(' ');
+  $('b64_out').textContent = b64;
 
-  $('sheet').innerHTML =
-    '<div style="text-align:center"><span class="badge">' + (kind === 'simplified' ? t.simpTitle : t.stdTitle) + '</span></div>' +
-    '<div class="t">' + (kind === 'simplified' ? t.simpTitle : t.stdTitle) + '</div>' +
-    '<div class="t2">' + (kind === 'simplified' ? t.simpSub : t.stdSub) + '</div>' +
-    '<div class="kv"><span>' + t.invNo + '</span><bdi>' + esc($('inv').value) + '</bdi></div>' +
-    '<div class="kv"><span>' + t.dateLbl + '</span><bdi>' + esc(when.replace('T', ' ')) + '</bdi></div>' +
-    '<div class="kv"><span>' + t.sellerLblOut + '</span>' + esc(seller) + '</div>' +
-    '<div class="kv"><span>' + t.vatLblOut + '</span><bdi>' + esc(vat) + '</bdi></div>' +
-    (kind === 'standard'
-      ? '<div class="kv"><span>' + t.buyerLblOut + '</span>' + esc(buyer || '-') + '</div>' +
-        (bvat ? '<div class="kv"><span>' + t.bvatLblOut + '</span><bdi>' + esc(bvat) + '</bdi></div>' : '')
-      : '') +
-    '<div style="margin-top:8px">' + lines + '</div>' +
-    '<div class="kv"><span>' + t.netLbl + '</span><bdi>' + money(net) + ' ' + t.cur + '</bdi></div>' +
-    '<div class="kv"><span>' + t.vatAmtLbl + ' (' + rate + '%)</span><bdi>' + money(vatAmt) + ' ' + t.cur + '</bdi></div>' +
-    '<div class="kv g"><span>' + t.totalLbl + '</span><bdi>' + money(total) + ' ' + t.cur + '</bdi></div>' +
-    '<div id="qr">' + (svg || '<span style="color:#5c6b7e">' + t.qrErr + '</span>') + '</div>';
+  const hEn = kind === 'standard' ? t.titleEn : t.simpEn;
+  const hAr = kind === 'standard' ? t.titleAr : t.simpAr;
 
-  $('out').innerHTML = payload ? '<h2>' + t.qrOut + '</h2><code>' + esc(payload) + '</code>' : '';
+  $('invoice_sheet').innerHTML = `
+    <div class="header-split">
+      <div class="seller-block">
+        <div class="seller-name">${esc(seller)}</div>
+        ${addr1 ? `<div class="seller-line">${esc(addr1)}</div>` : ''}
+        ${addr2 ? `<div class="seller-line">${esc(addr2)}</div>` : ''}
+        ${phone ? `<div class="seller-line">${esc(phone)}</div>` : ''}
+        ${country ? `<div class="seller-line">${esc(country)}</div>` : ''}
+      </div>
+      <div class="qr-block">${qrSvg}</div>
+    </div>
+
+    ${client ? `<div style="margin-top:8px;font-size:13.5px;font-weight:600;color:#111827;text-align:right">${esc(client)}</div>` : ''}
+
+    <div class="doc-title-row">
+      <div class="doc-title-en">${hEn}</div>
+      <div class="doc-num">${esc(invNo)}</div>
+      <div class="doc-title-ar">${hAr}</div>
+    </div>
+
+    <div class="meta-dates-wrap">
+      <table class="meta-dates-table">
+        <tr>
+          <td class="col-en">${t.invDateEn}</td>
+          <td class="col-val">${esc(fmtDateDMY(invDate))}</td>
+          <td class="col-ar">${t.invDateAr}</td>
+        </tr>
+        <tr>
+          <td class="col-en">${t.dueDateEn}</td>
+          <td class="col-val">${esc(fmtDateDMY(dueDate))}</td>
+          <td class="col-ar">${t.dueDateAr}</td>
+        </tr>
+        <tr>
+          <td class="col-en">${t.supDateEn}</td>
+          <td class="col-val">${esc(fmtDateDMY(supDate))}</td>
+          <td class="col-ar">${t.supDateAr}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="inv-table-wrap">
+      <table class="inv-table">
+        <thead>
+          <tr>
+            <th>${t.thDesc}<small>${t.thDescSub}</small></th>
+            <th>${t.thQty}<small>${t.thQtySub}</small></th>
+            <th>${t.thPrice}<small>${t.thPriceSub}</small></th>
+            <th>${t.thTax}<small>${t.thTaxSub}</small></th>
+            <th>${t.thSubEx}<small>${t.thSubExSub}</small></th>
+            <th>${t.thVatAmt}<small>${t.thVatAmtSub}</small></th>
+            <th>${t.thSubIn}<small>${t.thSubInSub}</small></th>
+          </tr>
+        </thead>
+        <tbody>${lineHtml}</tbody>
+      </table>
+    </div>
+
+    <div class="summary-area">
+      <table class="summary-table">
+        <tr>
+          <td class="s-val">${fmtNum(sumEx)} ${esc(cur)}</td>
+          <td class="s-lbl">${t.taxableLbl}</td>
+        </tr>
+        <tr>
+          <td class="s-val">${fmtNum(sumVat)} ${esc(cur)}</td>
+          <td class="s-lbl">${t.vatTaxesLbl}</td>
+        </tr>
+        <tr class="grand-row">
+          <td class="s-val">${fmtNum(sumIn)} ${esc(cur)}</td>
+          <td class="s-lbl">${t.grandLbl}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="payment-ref">
+      <span class="ref-en">${t.payEn}</span>
+      <span class="ref-val">${esc(payRef)}</span>
+      <span class="ref-ar">${t.payAr}</span>
+    </div>
+
+    <footer class="page-footer">
+      <div class="footer-left">
+        ${esc(email)} ${esc(web)} <strong>${esc(vat)}</strong>
+      </div>
+      <div class="footer-right">
+        <div>${esc(invDate)} ${esc(timeVal)}</div>
+        <div>${esc(t.pageLbl)}</div>
+      </div>
+    </footer>
+  `;
 }
 
-document.addEventListener('input', function(e){
-  var t = e.target;
-  if (t.dataset && t.dataset.f) { items[+t.dataset.i][t.dataset.f] = t.value; }
-  update();
-});
-document.addEventListener('click', function(e){
-  var t = e.target;
-  if (t.dataset && t.dataset.del !== undefined) {
-    items.splice(+t.dataset.del, 1);
-    renderItems();
-    update();
+document.addEventListener('input', (e) => {
+  const el = e.target;
+  if (el.dataset && el.dataset.row !== undefined) {
+    rows[Number(el.dataset.row)][el.dataset.key] = el.value;
+    renderInvoice();
+  } else if (el.closest('.grid-form')) {
+    renderInvoice();
   }
 });
-$('add').onclick = function(){ items.push({n:'', q:'1', p:''}); renderItems(); update(); };
-$('langToggle').onclick = function(){ lang = (lang === 'ar') ? 'fr' : 'ar'; applyLangUI(); renderItems(); update(); };
-$('printBtn').onclick = function(){ window.print(); };
 
-function setKind(k){
-  kind = k;
-  $('k1').className = k === 'simplified' ? 'on' : '';
-  $('k2').className = k === 'standard' ? 'on' : '';
-  $('buyerBox').style.display = k === 'standard' ? 'block' : 'none';
-  update();
-}
-function setRate(r){
-  rate = r;
-  $('r15').className = r === 15 ? 'on' : '';
-  $('r0').className = r === 0 ? 'on' : '';
-  update();
-}
-$('k1').onclick = function(){ setKind('simplified'); };
-$('k2').onclick = function(){ setKind('standard'); };
-$('r15').onclick = function(){ setRate(15); };
-$('r0').onclick = function(){ setRate(0); };
+document.addEventListener('click', (e) => {
+  const delBtn = e.target.closest('[data-del]');
+  if (delBtn && rows.length > 1) {
+    rows.splice(Number(delBtn.dataset.del), 1);
+    renderItemsEditor();
+    renderInvoice();
+  }
+});
 
-applyLangUI();
-setKind('simplified');
-renderItems();
-update();
+$('add_row_btn').onclick = () => {
+  rows.push({ desc: 'صنف جديد', qty: '1', price: '100', taxRate: '15', taxLabel: 'Sales Tax' });
+  renderItemsEditor();
+  renderInvoice();
+};
+
+$('k_std').onclick = () => {
+  kind = 'standard';
+  $('k_std').className = 'active';
+  $('k_smp').className = '';
+  renderInvoice();
+};
+
+$('k_smp').onclick = () => {
+  kind = 'simplified';
+  $('k_smp').className = 'active';
+  $('k_std').className = '';
+  renderInvoice();
+};
+
+$('lang_btn').onclick = () => {
+  lang = lang === 'ar' ? 'fr' : 'ar';
+  applyLabels();
+  renderItemsEditor();
+  renderInvoice();
+};
+
+$('print_btn').onclick = () => window.print();
+
+applyLabels();
+renderItemsEditor();
+renderInvoice();
 </script>
 </body>
 </html>
