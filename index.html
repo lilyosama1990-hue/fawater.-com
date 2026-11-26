@@ -58,6 +58,7 @@ button:disabled{opacity:.6;cursor:wait}
 button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn-pdf{background:#15803d;color:#fff;border-color:#15803d}
+.btn-clear{background:#f3f4f6;color:#374151;border-color:#d1d5db;padding:5px 10px;font-size:12px}
 .btn-danger{background:#fee2e2;color:#b91c1c;border-color:#fca5a5;padding:4px 9px;font-size:12px}
 
 .grid-form{
@@ -74,6 +75,8 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   border-radius:6px;
   background:#fff;
 }
+.field input[type="file"]{padding:5px 7px;font-size:12px}
+.logo-actions{display:flex;align-items:center;gap:8px;margin-top:5px}
 .items-editor{margin-top:12px;padding-top:12px;border-top:1px dashed #cbd5e1}
 .item-edit-row{
   display:grid;
@@ -144,12 +147,26 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .client-sub{color:#374151}
 
 .seller-balance-zone{
-  margin-top:16px;
+  margin-top:14px;
   margin-bottom:16px;
   text-align:right;
   max-width:340px;
   font-size:12px;
   line-height:1.45;
+}
+.logo-box{
+  width:92px;
+  height:68px;
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+}
+.logo-box img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  display:block;
 }
 .seller-name{font-weight:700;color:#111827}
 .seller-line{color:#374151}
@@ -318,6 +335,13 @@ code.b64-box{
     </div>
 
     <div class="grid-form">
+      <div class="field">
+        <label id="lbl_logo">اللوجو (اختياري)</label>
+        <input id="f_logo" type="file" accept="image/*">
+        <div class="logo-actions">
+          <button type="button" id="clear_logo_btn" class="btn-clear">إزالة اللوجو</button>
+        </div>
+      </div>
       <div class="field">
         <label id="lbl_seller">اسم الشركة</label>
         <input id="f_seller" value="">
@@ -598,6 +622,7 @@ function zatcaPayload(seller, vat, timestamp, total, vatTotal) {
 const $ = (id) => document.getElementById(id);
 let lang = 'ar';
 let kind = 'standard';
+let logoSrc = '';
 let rows = [
   { desc: '', qty: '1', price: '0', taxRate: '15' }
 ];
@@ -607,6 +632,7 @@ const UI = {
     dir: 'rtl', lang: 'ar', toggle: 'Français', pdf: 'حفظ PDF', pdfBusy: 'جاري التحميل...', print: 'طباعة',
     barTitle: 'إعداد الفاتورة (ZATCA)',
     kStd: 'ضريبية (B2B)', kSmp: 'مبسطة (B2C)',
+    lblLogo: 'اللوجو (اختياري)', clearLogo: 'إزالة اللوجو',
     lblSeller: 'اسم الشركة', lblVat: 'السجل الضريبي (15 رقم)',
     lblAddr1: 'العنوان / الحي', lblPhone: 'الهاتف / الرمز',
     lblClient: 'اسم العميل', lblClientAddr: 'عنوان العميل', lblClientVat: 'الرقم الضريبي للعميل',
@@ -639,6 +665,7 @@ const UI = {
     dir: 'ltr', lang: 'fr', toggle: 'العربية', pdf: 'Enregistrer PDF', pdfBusy: 'Téléchargement...', print: 'Imprimer',
     barTitle: 'Configuration Facture (ZATCA)',
     kStd: 'Fiscale (B2B)', kSmp: 'Simplifiée (B2C)',
+    lblLogo: 'Logo (optionnel)', clearLogo: 'Supprimer logo',
     lblSeller: 'Nom de l\'entreprise', lblVat: 'Registre fiscal / TVA (15 chiffres)',
     lblAddr1: 'Adresse / Quartier', lblPhone: 'Téléphone',
     lblClient: 'Nom du client', lblClientAddr: 'Adresse client', lblClientVat: 'TVA client',
@@ -718,6 +745,8 @@ function applyLabels() {
   $('ui_barTitle').textContent = t.barTitle;
   $('k_std').textContent = t.kStd;
   $('k_smp').textContent = t.kSmp;
+  $('lbl_logo').textContent = t.lblLogo;
+  $('clear_logo_btn').textContent = t.clearLogo;
   $('lbl_seller').textContent = t.lblSeller;
   $('lbl_vat').textContent = t.lblVat;
   $('lbl_addr1').textContent = t.lblAddr1;
@@ -834,6 +863,7 @@ function renderInvoice() {
     </div>
 
     <div class="seller-balance-zone">
+      ${logoSrc ? `<div class="logo-box"><img src="${logoSrc}" alt="Logo"></div>` : ''}
       ${seller ? `<div class="seller-name">${esc(seller)}</div>` : ''}
       ${addr1 ? `<div class="seller-line">${esc(addr1)}</div>` : ''}
       ${phone ? `<div class="seller-line">${esc(phone)}</div>` : ''}
@@ -947,6 +977,23 @@ async function downloadInvoicePDF() {
     btn.textContent = t.pdf;
   }
 }
+
+$('f_logo').addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    logoSrc = String(reader.result || '');
+    renderInvoice();
+  };
+  reader.readAsDataURL(file);
+});
+
+$('clear_logo_btn').onclick = () => {
+  logoSrc = '';
+  $('f_logo').value = '';
+  renderInvoice();
+};
 
 document.addEventListener('input', (e) => {
   const el = e.target;
