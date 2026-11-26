@@ -155,8 +155,8 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   line-height:1.45;
 }
 .logo-box{
-  width:92px;
-  height:68px;
+  width:96px;
+  height:70px;
   margin-bottom:8px;
   display:flex;
   align-items:center;
@@ -210,13 +210,12 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .bottom-zone{
   margin-top:18px;
   display:flex;
-  justify-content:space-between;
+  justify-content:flex-start;
   align-items:flex-start;
-  gap:20px;
 }
 .totals-box{
   width:100%;
-  max-width:430px;
+  max-width:450px;
   font-size:12px;
 }
 .total-row{
@@ -243,30 +242,6 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   text-align:right;
   color:#111827;
 }
-
-.qr-bottom-side{
-  width:136px;
-  flex-shrink:0;
-  text-align:center;
-}
-.qr-bottom-box{
-  width:118px;
-  height:118px;
-  margin:0 auto 6px;
-  border:1px solid var(--light-line);
-  padding:4px;
-  background:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.qr-bottom-box svg{width:100%;height:100%}
-.zatca-note{
-  font-size:9.5px;
-  line-height:1.35;
-  color:#374151;
-}
-.zatca-note .en{direction:ltr;color:#4b5563;margin-top:2px}
 
 .page-footer{
   margin-top:44px;
@@ -302,8 +277,6 @@ code.b64-box{
   .item-edit-row .desc-field{grid-column:1 / -1}
   .top-zone{flex-wrap:wrap}
   .center-meta{order:3;flex-basis:100%;margin-top:8px}
-  .bottom-zone{flex-direction:column-reverse;align-items:stretch}
-  .qr-bottom-side{margin:0 auto}
   .page-footer{flex-direction:column;align-items:flex-start}
 }
 
@@ -654,8 +627,6 @@ const UI = {
     subLbl: 'المجموع الفرعي Subtotal',
     vatLbl: 'إجمالي ضريبة القيمة المضافة Total VAT',
     totLbl: 'المجموع شامل القيمة المضافة Total',
-    zatcaAr: 'تم ترميز هذا الرمز وفقاً لمتطلبات هيئة الزكاة والضريبة والجمارك للفوترة الإلكترونية',
-    zatcaEn: 'This QR code is encoded as per ZATCA e-invoicing requirements',
     pageLbl: '1/1', b64Lbl: 'قيمة Base64 المشفرة للـ QR (ZATCA Phase 1):',
     errSeller: 'اكتب اسم الشركة.',
     errVat: 'السجل الضريبي يجب أن يكون 15 رقماً يبدأ وينتهي بالرقم 3.',
@@ -687,8 +658,6 @@ const UI = {
     subLbl: 'المجموع الفرعي Subtotal',
     vatLbl: 'إجمالي ضريبة القيمة المضافة Total VAT',
     totLbl: 'المجموع شامل القيمة المضافة Total',
-    zatcaAr: 'تم ترميز هذا الرمز وفقاً لمتطلبات هيئة الزكاة والضريبة والجمارك للفوترة الإلكترونية',
-    zatcaEn: 'This QR code is encoded as per ZATCA e-invoicing requirements',
     pageLbl: '1/1', b64Lbl: 'Chaîne Base64 encodée pour QR (ZATCA Phase 1) :',
     errSeller: 'Saisissez le nom de l\'entreprise.',
     errVat: 'Le numéro doit contenir 15 chiffres et commencer/finir par 3.',
@@ -838,7 +807,7 @@ function renderInvoice() {
 
   $('invoice_sheet').innerHTML = `
     <div class="top-zone">
-      <div class="top-qr-slot">${qrSvg}</div>
+      ${qrSvg ? `<div class="top-qr-slot">${qrSvg}</div>` : `<div style="width:116px;flex-shrink:0"></div>`}
 
       <div class="center-meta">
         <div class="meta-block">
@@ -905,14 +874,6 @@ function renderInvoice() {
         <div class="total-row final">
           <div class="total-left"><span>${fmtNum(sumIn)}</span><span>${esc(cur)}</span></div>
           <div class="total-right">${t.totLbl}</div>
-        </div>
-      </div>
-
-      <div class="qr-bottom-side">
-        <div class="qr-bottom-box">${qrSvg}</div>
-        <div class="zatca-note">
-          <div>${t.zatcaAr}</div>
-          <div class="en">${t.zatcaEn}</div>
         </div>
       </div>
     </div>
