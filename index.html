@@ -129,36 +129,45 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   transition:box-shadow .15s ease;
 }
 .invoice-page.edit-mode .draggable-part{
-  cursor:grab;
-  touch-action:none;
   border:1px dashed #f59e0b;
   border-radius:6px;
   background:rgba(255,251,235,.82);
   padding:4px;
 }
-.invoice-page.edit-mode .draggable-part:hover,
 .invoice-page.edit-mode .draggable-part.dragging{
-  cursor:grabbing;
   border-style:solid;
   border-color:#b45309;
   box-shadow:0 6px 18px rgba(180,83,9,.22);
   z-index:20;
 }
-.drag-badge{
+.invoice-page.edit-mode [contenteditable="true"]{
+  cursor:text;
+  outline:1px dotted rgba(180,83,9,.55);
+  border-radius:3px;
+  min-height:18px;
+}
+.invoice-page.edit-mode [contenteditable="true"]:focus{
+  outline:2px solid #d97706;
+  background:#fef9c3;
+}
+.drag-handle{
   display:none;
   position:absolute;
-  top:-10px;
+  top:-11px;
   right:6px;
   background:#b45309;
   color:#fff;
   font-size:10px;
   font-weight:700;
-  padding:1px 6px;
+  padding:1px 7px;
   border-radius:4px;
-  pointer-events:none;
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
   z-index:25;
 }
-.invoice-page.edit-mode .drag-badge{display:inline-block}
+.drag-handle:active{cursor:grabbing}
+.invoice-page.edit-mode .drag-handle{display:inline-block}
 
 .header-top-bar{
   display:flex;
@@ -233,12 +242,14 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .seller-info{
   text-align:right;
   max-width:260px;
+  width:100%;
 }
 .seller-name{font-weight:700;color:#111827}
 .seller-line{color:#374151}
 .balance-box{
   margin-top:16px;
   text-align:right;
+  width:100%;
 }
 .balance-lbl-ar{font-weight:700;color:#111827}
 .balance-lbl-en{color:#4b5563;font-size:11px;direction:ltr;text-align:right}
@@ -323,9 +334,9 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   font-size:11px;
   color:#374151;
 }
-.footer-left{direction:ltr;text-align:left}
-.footer-center{text-align:center;font-weight:600}
-.footer-right{direction:ltr;text-align:right}
+.footer-left{direction:ltr;text-align:left;min-width:60px}
+.footer-center{text-align:center;font-weight:600;min-width:60px}
+.footer-right{direction:ltr;text-align:right;min-width:40px}
 
 code.b64-box{
   direction:ltr;
@@ -360,9 +371,10 @@ code.b64-box{
 @media print{
   body{background:#fff;padding:0}
   .app-shell{max-width:100%;gap:0}
-  .editor-bar,.no-print,.b64-wrap,.drag-badge{display:none!important}
+  .editor-bar,.no-print,.b64-wrap,.drag-handle{display:none!important}
   .invoice-page{border:none;box-shadow:none;padding:0;outline:none!important;background:#fff!important}
   .invoice-page .draggable-part{border:none!important;background:transparent!important;padding:0!important}
+  .invoice-page [contenteditable="true"]{outline:none!important;background:transparent!important}
 }
 </style>
 </head>
@@ -375,7 +387,7 @@ code.b64-box{
         <button type="button" id="k_std" class="active">ضريبية (B2B)</button>
         <button type="button" id="k_smp">مبسطة (B2C)</button>
         <button type="button" id="lang_btn">Français</button>
-        <button type="button" id="edit_pos_btn" class="btn-edit">تعديل المواقع</button>
+        <button type="button" id="edit_pos_btn" class="btn-edit">تعديل الفاتورة / المواقع</button>
         <button type="button" id="reset_pos_btn" class="btn-clear">إعادة المواقع</button>
         <button type="button" id="pdf_btn" class="btn-pdf">حفظ PDF</button>
         <button type="button" id="print_btn" class="btn-primary">طباعة</button>
@@ -383,7 +395,7 @@ code.b64-box{
     </div>
 
     <div class="edit-hint" id="edit_hint">
-      وضع التعديل مفعّل: اسحب أي جزء داخل الفاتورة (QR، العميل، رقم الفاتورة والتاريخ، اللوجو وبيانات الشركة، الجدول، أو الإجماليات) لتحريكه إلى المكان الذي تريده، ثم اضغط "إنهاء التعديل".
+      وضع التعديل مفعّل: اضغط على أي نص داخل الفاتورة للكتابة أو التعديل فيه مباشرة، واسحب علامة (⋮⋮) لتحريك أي جزء لمكانه، ثم اضغط "إنهاء التعديل".
     </div>
 
     <div class="grid-form">
@@ -703,8 +715,8 @@ function posStyle(key) {
 const UI = {
   ar: {
     dir: 'rtl', lang: 'ar', toggle: 'Français', pdf: 'حفظ PDF', pdfBusy: 'جاري التحميل...', print: 'طباعة',
-    editPos: 'تعديل المواقع', donePos: 'إنهاء التعديل', resetPos: 'إعادة المواقع',
-    editHint: 'وضع التعديل مفعّل: اسحب أي جزء داخل الفاتورة (QR، العميل، رقم الفاتورة والتاريخ، اللوجو وبيانات الشركة، الجدول، أو الإجماليات) لتحريكه إلى المكان الذي تريده، ثم اضغط "إنهاء التعديل".',
+    editPos: 'تعديل الفاتورة / المواقع', donePos: 'إنهاء التعديل', resetPos: 'إعادة المواقع',
+    editHint: 'وضع التعديل مفعّل: اضغط على أي نص داخل الفاتورة للكتابة أو التعديل فيه مباشرة، واسحب علامة (⋮⋮) لتحريك أي جزء لمكانه، ثم اضغط "إنهاء التعديل".',
     barTitle: 'إعداد الفاتورة (ZATCA)',
     kStd: 'ضريبية (B2B)', kSmp: 'مبسطة (B2C)',
     lblLogo: 'اللوجو (اختياري)', clearLogo: 'إزالة اللوجو',
@@ -733,13 +745,13 @@ const UI = {
     errSeller: 'اكتب اسم الشركة.',
     errVat: 'السجل الضريبي يجب أن يكون 15 رقماً يبدأ وينتهي بالرقم 3.',
     errItem: 'تأكد من إدخال وصف وكمية وسعر صحيح لكل بند.',
-    tagQr: 'QR', tagClient: 'العميل', tagMeta: 'الرقم والتاريخ',
-    tagBrand: 'اللوجو والبيانات', tagTable: 'الجدول', tagTotals: 'الإجماليات'
+    tagQr: '⋮⋮ QR', tagClient: '⋮⋮ العميل', tagMeta: '⋮⋮ الرقم والتاريخ',
+    tagBrand: '⋮⋮ اللوجو والبيانات', tagTable: '⋮⋮ الجدول', tagTotals: '⋮⋮ الإجماليات'
   },
   fr: {
     dir: 'ltr', lang: 'fr', toggle: 'العربية', pdf: 'Enregistrer PDF', pdfBusy: 'Téléchargement...', print: 'Imprimer',
-    editPos: 'Modifier positions', donePos: 'Terminer', resetPos: 'Réinitialiser',
-    editHint: 'Mode édition activé : faites glisser n\'importe quel bloc de la facture pour le déplacer, puis cliquez sur "Terminer".',
+    editPos: 'Modifier facture / positions', donePos: 'Terminer', resetPos: 'Réinitialiser',
+    editHint: 'Mode édition activé : cliquez sur n\'importe quel texte pour le modifier, glissez (⋮⋮) pour déplacer un bloc, puis cliquez sur "Terminer".',
     barTitle: 'Configuration Facture (ZATCA)',
     kStd: 'Fiscale (B2B)', kSmp: 'Simplifiée (B2C)',
     lblLogo: 'Logo (optionnel)', clearLogo: 'Supprimer logo',
@@ -768,8 +780,8 @@ const UI = {
     errSeller: 'Saisissez le nom de l\'entreprise.',
     errVat: 'Le numéro doit contenir 15 chiffres et commencer/finir par 3.',
     errItem: 'Vérifiez la désignation, la quantité et le prix de chaque ligne.',
-    tagQr: 'QR', tagClient: 'Client', tagMeta: 'N° & Date',
-    tagBrand: 'Logo & Infos', tagTable: 'Tableau', tagTotals: 'Totaux'
+    tagQr: '⋮⋮ QR', tagClient: '⋮⋮ Client', tagMeta: '⋮⋮ N° & Date',
+    tagBrand: '⋮⋮ Logo & Infos', tagTable: '⋮⋮ Tableau', tagTotals: '⋮⋮ Totaux'
   }
 };
 
@@ -783,6 +795,10 @@ function fmtFixed2(n) {
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+
+function edAttr() {
+  return editMode ? 'contenteditable="true" spellcheck="false"' : 'contenteditable="false"';
 }
 
 function renderItemsEditor() {
@@ -844,10 +860,12 @@ function applyLabels() {
   $('lbl_cur').textContent = t.lblCur;
   $('add_row_btn').textContent = t.addRow;
   $('lbl_b64').textContent = t.b64Lbl;
+  renderInvoice();
 }
 
 function renderInvoice() {
   const t = UI[lang];
+  const ed = edAttr();
   const seller = $('f_seller').value.trim();
   const vat = $('f_vat').value.replace(/\D/g, '').slice(0, 15);
   const addr1 = $('f_addr1').value.trim();
@@ -887,12 +905,12 @@ function renderInvoice() {
 
     return `
       <tr>
-        <td class="desc-cell">${idx + 1} ${esc(r.desc || '-')}</td>
-        <td class="num-cell">${esc(r.qty || '0')}</td>
-        <td class="num-cell">${fmtNum(p)}</td>
-        <td class="num-cell">${fmtNum(ex)}</td>
-        <td class="num-cell">${fmtNum(vAmt)}<br><small>${tr}%</small></td>
-        <td class="num-cell">${fmtNum(inc)}</td>
+        <td class="desc-cell" ${ed}>${idx + 1} ${esc(r.desc || '-')}</td>
+        <td class="num-cell" ${ed}>${esc(r.qty || '0')}</td>
+        <td class="num-cell" ${ed}>${fmtNum(p)}</td>
+        <td class="num-cell" ${ed}>${fmtNum(ex)}</td>
+        <td class="num-cell" ${ed}>${fmtNum(vAmt)}<br><small>${tr}%</small></td>
+        <td class="num-cell" ${ed}>${fmtNum(inc)}</td>
       </tr>
     `;
   }).join('');
@@ -923,7 +941,7 @@ function renderInvoice() {
     <div class="header-top-bar">
       ${qrSvg ? `
         <div class="draggable-part top-qr-slot" data-pos-key="qr" style="${posStyle('qr')}">
-          <span class="drag-badge">${t.tagQr}</span>
+          <span class="drag-handle">${t.tagQr}</span>
           ${qrSvg}
         </div>
       ` : ''}
@@ -931,56 +949,56 @@ function renderInvoice() {
 
     <div class="mid-grid">
       <div class="draggable-part client-zone" data-pos-key="client" style="${posStyle('client')}">
-        <span class="drag-badge">${t.tagClient}</span>
-        <div class="client-title-ar">${t.clientAr}</div>
-        <div class="client-title-en">${t.clientEn}</div>
-        ${client ? `<div class="client-name">${esc(client)}</div>` : ''}
-        ${clientAddr ? `<div class="client-sub">${esc(clientAddr)}</div>` : ''}
-        ${clientVat ? `<div class="client-sub">${t.vatRegAr} ${esc(clientVat)}</div>` : ''}
+        <span class="drag-handle">${t.tagClient}</span>
+        <div class="client-title-ar" ${ed}>${t.clientAr}</div>
+        <div class="client-title-en" ${ed}>${t.clientEn}</div>
+        <div class="client-name" ${ed}>${esc(client)}</div>
+        <div class="client-sub" ${ed}>${esc(clientAddr)}</div>
+        <div class="client-sub" ${ed}>${clientVat ? `${t.vatRegAr} ${esc(clientVat)}` : ''}</div>
       </div>
 
       <div class="draggable-part center-meta" data-pos-key="meta" style="${posStyle('meta')}">
-        <span class="drag-badge">${t.tagMeta}</span>
+        <span class="drag-handle">${t.tagMeta}</span>
         <div class="meta-block">
-          <div class="meta-ar">${t.invNoAr}</div>
-          <div class="meta-en">${t.invNoEn}</div>
-          <div class="meta-val">${esc(invNo)}</div>
+          <div class="meta-ar" ${ed}>${t.invNoAr}</div>
+          <div class="meta-en" ${ed}>${t.invNoEn}</div>
+          <div class="meta-val" ${ed}>${esc(invNo)}</div>
         </div>
         <div class="meta-block">
-          <div class="meta-ar">${t.dateAr}</div>
-          <div class="meta-en">${t.dateEn}</div>
-          <div class="meta-val">${esc(invDate)}</div>
+          <div class="meta-ar" ${ed}>${t.dateAr}</div>
+          <div class="meta-en" ${ed}>${t.dateEn}</div>
+          <div class="meta-val" ${ed}>${esc(invDate)}</div>
         </div>
       </div>
 
       <div class="draggable-part right-brand-col" data-pos-key="brand" style="${posStyle('brand')}">
-        <span class="drag-badge">${t.tagBrand}</span>
+        <span class="drag-handle">${t.tagBrand}</span>
         ${logoSrc ? `<div class="logo-box"><img src="${logoSrc}" alt="Logo"></div>` : ''}
         <div class="seller-info">
-          ${seller ? `<div class="seller-name">${esc(seller)}</div>` : ''}
-          ${addr1 ? `<div class="seller-line">${esc(addr1)}</div>` : ''}
-          ${phone ? `<div class="seller-line">${esc(phone)}</div>` : ''}
-          ${vat ? `<div class="seller-line">${t.vatRegAr} ${esc(vat)}</div>` : ''}
+          <div class="seller-name" ${ed}>${esc(seller)}</div>
+          <div class="seller-line" ${ed}>${esc(addr1)}</div>
+          <div class="seller-line" ${ed}>${esc(phone)}</div>
+          <div class="seller-line" ${ed}>${vat ? `${t.vatRegAr} ${esc(vat)}` : ''}</div>
         </div>
         <div class="balance-box">
-          <div class="balance-lbl-ar">${t.balAr}</div>
-          <div class="balance-lbl-en">${t.balEn}</div>
-          <div class="balance-val">${esc(cur)} ${fmtNum(balance)}</div>
+          <div class="balance-lbl-ar" ${ed}>${t.balAr}</div>
+          <div class="balance-lbl-en" ${ed}>${t.balEn}</div>
+          <div class="balance-val" ${ed}>${esc(cur)} ${fmtNum(balance)}</div>
         </div>
       </div>
     </div>
 
     <div class="draggable-part inv-table-wrap" data-pos-key="table" style="${posStyle('table')}">
-      <span class="drag-badge">${t.tagTable}</span>
+      <span class="drag-handle">${t.tagTable}</span>
       <table class="inv-table">
         <thead>
           <tr>
-            <th>${t.thDesc}<small>${t.thDescSub}</small></th>
-            <th>${t.thQty}<small>${t.thQtySub}</small></th>
-            <th>${t.thPrice}<small>${t.thPriceSub}</small></th>
-            <th>${t.thTaxable}<small>${t.thTaxableSub}</small></th>
-            <th>${t.thVatAmt}<small>${t.thVatAmtSub}</small></th>
-            <th>${t.thTotal}<small>${t.thTotalSub}</small></th>
+            <th ${ed}>${t.thDesc}<small>${t.thDescSub}</small></th>
+            <th ${ed}>${t.thQty}<small>${t.thQtySub}</small></th>
+            <th ${ed}>${t.thPrice}<small>${t.thPriceSub}</small></th>
+            <th ${ed}>${t.thTaxable}<small>${t.thTaxableSub}</small></th>
+            <th ${ed}>${t.thVatAmt}<small>${t.thVatAmtSub}</small></th>
+            <th ${ed}>${t.thTotal}<small>${t.thTotalSub}</small></th>
           </tr>
         </thead>
         <tbody>${lineHtml}</tbody>
@@ -989,26 +1007,26 @@ function renderInvoice() {
 
     <div class="bottom-zone">
       <div class="draggable-part totals-box" data-pos-key="totals" style="${posStyle('totals')}">
-        <span class="drag-badge">${t.tagTotals}</span>
+        <span class="drag-handle">${t.tagTotals}</span>
         <div class="total-row">
-          <div class="total-left"><span>${fmtNum(sumEx)}</span><span>${esc(cur)}</span></div>
-          <div class="total-right">${t.subLbl}</div>
+          <div class="total-left"><span ${ed}>${fmtNum(sumEx)}</span><span ${ed}>${esc(cur)}</span></div>
+          <div class="total-right" ${ed}>${t.subLbl}</div>
         </div>
         <div class="total-row">
-          <div class="total-left"><span>${fmtNum(sumVat)}</span><span>${esc(cur)}</span></div>
-          <div class="total-right">${t.vatLbl}</div>
+          <div class="total-left"><span ${ed}>${fmtNum(sumVat)}</span><span ${ed}>${esc(cur)}</span></div>
+          <div class="total-right" ${ed}>${t.vatLbl}</div>
         </div>
         <div class="total-row final">
-          <div class="total-left"><span>${fmtNum(sumIn)}</span><span>${esc(cur)}</span></div>
-          <div class="total-right">${t.totLbl}</div>
+          <div class="total-left"><span ${ed}>${fmtNum(sumIn)}</span><span ${ed}>${esc(cur)}</span></div>
+          <div class="total-right" ${ed}>${t.totLbl}</div>
         </div>
       </div>
     </div>
 
     <footer class="page-footer">
-      <div class="footer-left">${esc(invNo)}</div>
-      <div class="footer-center">${esc(seller)}</div>
-      <div class="footer-right">${esc(t.pageLbl)}</div>
+      <div class="footer-left" ${ed}>${esc(invNo)}</div>
+      <div class="footer-center" ${ed}>${esc(seller)}</div>
+      <div class="footer-right" ${ed}>${esc(t.pageLbl)}</div>
     </footer>
   `;
 }
@@ -1017,7 +1035,9 @@ let activeDrag = null;
 
 $('invoice_sheet').addEventListener('pointerdown', (e) => {
   if (!editMode) return;
-  const part = e.target.closest('.draggable-part');
+  const handle = e.target.closest('.drag-handle');
+  if (!handle) return;
+  const part = handle.closest('.draggable-part');
   if (!part) return;
   const key = part.dataset.posKey;
   if (!key) return;
@@ -1031,7 +1051,7 @@ $('invoice_sheet').addEventListener('pointerdown', (e) => {
     origY: current.y
   };
   part.classList.add('dragging');
-  part.setPointerCapture(e.pointerId);
+  handle.setPointerCapture(e.pointerId);
 });
 
 $('invoice_sheet').addEventListener('pointermove', (e) => {
@@ -1147,6 +1167,7 @@ $('clear_logo_btn').onclick = () => {
 
 document.addEventListener('input', (e) => {
   const el = e.target;
+  if (el.closest && el.closest('#invoice_sheet')) return;
   if (el.dataset && el.dataset.row !== undefined) {
     rows[Number(el.dataset.row)][el.dataset.key] = el.value;
     renderInvoice();
@@ -1188,7 +1209,6 @@ $('lang_btn').onclick = () => {
   lang = lang === 'ar' ? 'fr' : 'ar';
   applyLabels();
   renderItemsEditor();
-  renderInvoice();
 };
 
 $('pdf_btn').onclick = downloadInvoicePDF;
@@ -1196,7 +1216,6 @@ $('print_btn').onclick = () => window.print();
 
 applyLabels();
 renderItemsEditor();
-renderInvoice();
 </script>
 </body>
 </html>
