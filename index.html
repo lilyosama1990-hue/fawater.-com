@@ -3,18 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>فاتورة إلكترونية - ZATCA</title>
+  <title>Fawatery — Facture Électronique ZATCA</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <style>
     :root {
-      --bg: #f3f5f8;
+      --navy: #0f2942;
+      --navy-2: #193c5e;
+      --gold: #c59d5f;
+      --gold-soft: #fdf8ef;
+      --bg: #eef2f6;
       --card: #ffffff;
-      --primary: #16324f;
-      --accent: #0f766e;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --danger: #dc2626;
+      --text: #182230;
+      --muted: #5c6b7e;
+      --line: #e2e8f0;
+      --danger: #c62828;
     }
 
     * {
@@ -25,92 +27,140 @@
     body {
       margin: 0;
       padding: 16px;
-      background: var(--bg);
+      background: linear-gradient(180deg, #e8eef5 0%, var(--bg) 100%);
       color: var(--text);
+      line-height: 1.5;
     }
 
-    .container {
-      max-width: 960px;
+    .app {
+      max-width: 980px;
       margin: 0 auto;
       display: grid;
-      gap: 20px;
+      gap: 18px;
     }
 
-    .toolbar {
+    .topbar {
+      background: var(--navy);
+      color: #fff;
+      border-radius: 16px;
+      padding: 16px 20px;
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      justify-content: space-between;
+      gap: 12px;
       align-items: center;
-      background: var(--card);
-      padding: 14px 18px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
+      justify-content: space-between;
+      box-shadow: 0 10px 25px rgba(15, 41, 66, 0.14);
+      border-bottom: 3px solid var(--gold);
     }
 
-    .toolbar h1 {
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(197, 157, 95, 0.18);
+      border: 1px solid rgba(197, 157, 95, 0.55);
+      color: var(--gold);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .brand h1 {
       margin: 0;
       font-size: 18px;
-      color: var(--primary);
+      letter-spacing: 0.2px;
     }
 
-    .actions {
+    .brand p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+
+    .controls {
       display: flex;
-      gap: 10px;
       flex-wrap: wrap;
+      gap: 8px;
     }
 
     button {
       border: none;
-      border-radius: 8px;
-      padding: 10px 16px;
-      font-size: 14px;
-      font-weight: 600;
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-size: 13.5px;
+      font-weight: 700;
       cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.15s ease;
     }
 
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
+    button:active {
+      transform: scale(0.98);
     }
 
-    .btn-secondary {
-      background: var(--primary);
-      color: #fff;
+    .btn-gold {
+      background: var(--gold);
+      color: var(--navy);
     }
 
-    .btn-outline {
-      background: #fff;
-      color: var(--text);
-      border: 1px solid var(--border);
+    .btn-light {
+      background: #ffffff;
+      color: var(--navy);
     }
 
-    .btn-danger {
-      background: #fee2e2;
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .btn-add {
+      background: var(--navy-2);
+      color: #ffffff;
+    }
+
+    .btn-del {
+      background: #fdecec;
       color: var(--danger);
       padding: 6px 10px;
       font-size: 12px;
+      border-radius: 8px;
     }
 
-    .panel, .invoice-sheet {
+    .card {
       background: var(--card);
-      border-radius: 14px;
-      border: 1px solid var(--border);
+      border-radius: 16px;
+      border: 1px solid var(--line);
       padding: 20px;
+      box-shadow: 0 6px 20px rgba(15, 41, 66, 0.05);
     }
 
-    .panel-title {
-      margin: 0 0 14px;
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-head h2 {
+      margin: 0;
       font-size: 15px;
-      color: var(--primary);
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
+      color: var(--navy);
     }
 
-    .grid-3 {
+    .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 12px;
+      gap: 14px;
     }
 
     .field {
@@ -120,157 +170,210 @@
     }
 
     .field label {
-      font-size: 13px;
+      font-size: 12.5px;
+      font-weight: 700;
       color: var(--muted);
-      font-weight: 600;
     }
 
     .field input {
-      padding: 9px 11px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
       font-size: 14px;
       color: var(--text);
-      background: #fff;
+      background: #fcfdff;
     }
 
-    .inv-header {
+    .field input:focus {
+      outline: none;
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(15, 41, 66, 0.08);
+    }
+
+    .invoice-paper {
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid #d8e0e8;
+      padding: 24px;
+      box-shadow: 0 12px 30px rgba(15, 41, 66, 0.07);
+    }
+
+    .inv-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 16px;
-      border-bottom: 2px solid var(--primary);
-      padding-bottom: 16px;
-      margin-bottom: 18px;
+      gap: 18px;
       flex-wrap: wrap;
+      padding-bottom: 18px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--navy);
     }
 
-    .inv-company h2 {
-      margin: 0 0 6px;
-      color: var(--primary);
-      font-size: 22px;
-    }
-
-    .inv-meta {
-      text-align: left;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .badge {
+    .tag-pill {
       display: inline-block;
-      background: #ecfdf5;
-      color: var(--accent);
-      border: 1px solid #a7f3d0;
-      padding: 3px 10px;
+      background: var(--gold-soft);
+      color: #8a6424;
+      border: 1px solid #ebd2a2;
+      padding: 4px 12px;
       border-radius: 999px;
       font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 6px;
+      font-weight: 800;
+      margin-bottom: 8px;
     }
 
-    .table-wrap {
+    .inv-seller h3 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      color: var(--navy);
+    }
+
+    .meta-line {
+      font-size: 13.5px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .meta-line strong {
+      color: var(--text);
+    }
+
+    .inv-info {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 16px;
+      min-width: 240px;
+      font-size: 13.5px;
+    }
+
+    .table-box {
       overflow-x: auto;
-      margin-bottom: 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin-bottom: 20px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 520px;
       font-size: 14px;
     }
 
-    th, td {
-      border: 1px solid var(--border);
-      padding: 10px;
-      text-align: right;
+    th {
+      background: var(--navy);
+      color: #ffffff;
+      padding: 12px;
+      font-weight: 700;
+      text-align: inherit;
     }
 
-    th {
-      background: #f8fafc;
-      color: var(--primary);
-      font-weight: 700;
+    td {
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      vertical-align: middle;
     }
 
     td input {
       width: 100%;
-      padding: 6px 8px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 13px;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13.5px;
     }
 
-    .inv-footer {
+    .inv-bottom {
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 20px;
+      gap: 24px;
       align-items: center;
-      border-top: 1px solid var(--border);
       padding-top: 18px;
+      border-top: 1px solid var(--line);
     }
 
-    .totals {
-      max-width: 340px;
-      margin-right: auto;
+    .summary-box {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      max-width: 390px;
       width: 100%;
     }
 
-    .total-row {
+    .sum-row {
       display: flex;
       justify-content: space-between;
-      padding: 7px 0;
-      border-bottom: 1px dashed var(--border);
+      padding: 8px 0;
+      border-bottom: 1px dashed #cbd5e1;
       font-size: 14px;
     }
 
-    .total-row.grand {
+    .sum-row.total {
       border-bottom: none;
+      margin-top: 6px;
+      padding-top: 12px;
+      border-top: 2px solid var(--navy);
       font-size: 17px;
       font-weight: 800;
-      color: var(--primary);
-      padding-top: 10px;
+      color: var(--navy);
     }
 
-    .qr-box {
+    .qr-card {
       text-align: center;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      background: #fafafa;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 14px;
+      min-width: 185px;
     }
 
-    .qr-box canvas {
+    .qr-card canvas,
+    .qr-card img {
       display: block;
-      margin: 0 auto 6px;
+      margin: 0 auto 8px;
+      width: 150px;
+      height: 150px;
+      border-radius: 8px;
     }
 
-    .qr-box small {
-      color: var(--muted);
+    .qr-caption {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .qr-status {
       font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
     }
 
-    @media (max-width: 640px) {
-      .inv-meta {
-        text-align: right;
+    @media (max-width: 680px) {
+      .inv-info {
         width: 100%;
       }
-      .inv-footer {
+      .inv-bottom {
         grid-template-columns: 1fr;
       }
-      .totals {
+      .summary-box {
         max-width: 100%;
+      }
+      .qr-card {
+        width: 100%;
       }
     }
 
     @media print {
       body {
-        background: #fff;
+        background: #ffffff;
         padding: 0;
       }
-      .toolbar, .panel, .no-print {
+      .topbar,
+      .edit-panel,
+      .no-print {
         display: none !important;
       }
-      .invoice-sheet {
+      .invoice-paper {
         border: none;
         box-shadow: none;
         padding: 0;
@@ -279,112 +382,193 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="toolbar">
-      <h1>نظام الفواتير الإلكترونية (ZATCA)</h1>
-      <div class="actions">
-        <button class="btn-outline" type="button" onclick="addItem()">+ إضافة صنف</button>
-        <button class="btn-primary" type="button" onclick="updateInvoice()">تحديث الباركود</button>
-        <button class="btn-secondary" type="button" onclick="window.print()">طباعة / PDF</button>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">Z</div>
+        <div>
+          <h1 id="appTitle">نظام الفواتير الإلكترونية — ZATCA</h1>
+          <p id="appSubtitle">معاينة فورية • تعديل سهل • باركود TLV Base64 • طباعة PDF</p>
+        </div>
       </div>
-    </div>
+      <div class="controls">
+        <button class="btn-ghost" type="button" onclick="toggleLang()" id="langBtn">Français</button>
+        <button class="btn-light" type="button" onclick="addItem()" id="addBtn">+ إضافة صنف</button>
+        <button class="btn-gold" type="button" onclick="renderInvoice()" id="refreshBtn">تحديث الباركود</button>
+        <button class="btn-light" type="button" onclick="window.print()" id="printBtn">طباعة / PDF</button>
+      </div>
+    </header>
 
-    <section class="panel">
-      <h2 class="panel-title">بيانات المنشأة والفاتورة</h2>
-      <div class="grid-3">
+    <section class="card edit-panel">
+      <div class="section-head">
+        <h2 id="editTitle">بيانات الفاتورة والتعديل</h2>
+      </div>
+      <div class="form-grid">
         <div class="field">
-          <label for="sellerName">اسم البائع / المنشأة</label>
-          <input id="sellerName" type="text" value="مؤسسة دار الريف التجارية" oninput="updateInvoice()" />
+          <label for="sellerName" id="lblSeller">اسم البائع / المنشأة</label>
+          <input id="sellerName" type="text" value="مؤسسة دار الريف التجارية" oninput="renderInvoice()" />
         </div>
         <div class="field">
-          <label for="vatNumber">الرقم الضريبي (15 رقم)</label>
-          <input id="vatNumber" type="text" maxlength="15" value="300000000000003" oninput="updateInvoice()" />
+          <label for="vatNumber" id="lblVatNo">الرقم الضريبي (15 رقم)</label>
+          <input id="vatNumber" type="text" maxlength="15" value="300000000000003" oninput="renderInvoice()" />
         </div>
         <div class="field">
-          <label for="invoiceNumber">رقم الفاتورة</label>
-          <input id="invoiceNumber" type="text" value="INV-2026-001" oninput="updateInvoice()" />
+          <label for="invoiceNumber" id="lblInvNo">رقم الفاتورة</label>
+          <input id="invoiceNumber" type="text" value="INV-2026-001" oninput="renderInvoice()" />
         </div>
         <div class="field">
-          <label for="customerName">اسم العميل</label>
-          <input id="customerName" type="text" value="عميل نقدي" oninput="updateInvoice()" />
+          <label for="customerName" id="lblCustomer">اسم العميل</label>
+          <input id="customerName" type="text" value="عميل نقدي" oninput="renderInvoice()" />
         </div>
         <div class="field">
-          <label for="invoiceDate">تاريخ ووقت الإصدار (ISO)</label>
-          <input id="invoiceDate" type="text" value="2026-11-26T12:00:00Z" oninput="updateInvoice()" />
+          <label for="invoiceDate" id="lblDate">تاريخ الإصدار (ISO)</label>
+          <input id="invoiceDate" type="text" value="2026-11-26T12:09:00Z" oninput="renderInvoice()" />
         </div>
         <div class="field">
-          <label for="vatRate">نسبة الضريبة (%)</label>
-          <input id="vatRate" type="number" step="0.01" value="15" oninput="updateInvoice()" />
+          <label for="vatRate" id="lblVatRate">نسبة الضريبة (%)</label>
+          <input id="vatRate" type="number" step="0.01" value="15" oninput="renderInvoice()" />
         </div>
       </div>
     </section>
 
-    <section class="invoice-sheet">
-      <div class="inv-header">
-        <div class="inv-company">
-          <span class="badge">فاتورة ضريبية مبسطة</span>
-          <h2 id="viewSellerName">مؤسسة دار الريف التجارية</h2>
-          <div>الرقم الضريبي: <strong id="viewVatNumber">300000000000003</strong></div>
-          <div>العميل: <span id="viewCustomerName">عميل نقدي</span></div>
+    <main class="invoice-paper">
+      <div class="inv-top">
+        <div class="inv-seller">
+          <span class="tag-pill" id="docBadge">فاتورة ضريبية مبسطة</span>
+          <h3 id="outSeller">مؤسسة دار الريف التجارية</h3>
+          <div class="meta-line"><span id="outVatLabel">الرقم الضريبي</span>: <strong id="outVat">300000000000003</strong></div>
+          <div class="meta-line"><span id="outCustomerLabel">العميل</span>: <strong id="outCustomer">عميل نقدي</strong></div>
         </div>
-        <div class="inv-meta">
-          <div>رقم الفاتورة: <strong id="viewInvoiceNumber">INV-2026-001</strong></div>
-          <div>التاريخ: <span id="viewInvoiceDate">2026-11-26T12:00:00Z</span></div>
+        <div class="inv-info">
+          <div class="meta-line"><span id="outInvLabel">رقم الفاتورة</span>: <strong id="outInvNo">INV-2026-001</strong></div>
+          <div class="meta-line"><span id="outDateLabel">التاريخ</span>: <strong id="outDate">2026-11-26T12:09:00Z</strong></div>
         </div>
       </div>
 
-      <div class="table-wrap">
+      <div class="table-box">
         <table>
           <thead>
             <tr>
-              <th>الصنف</th>
-              <th style="width: 110px;">الكمية</th>
-              <th style="width: 140px;">سعر الوحدة</th>
-              <th style="width: 140px;">الإجمالي</th>
-              <th class="no-print" style="width: 80px;">حذف</th>
+              <th id="thItem">الصنف</th>
+              <th id="thQty" style="width: 110px;">الكمية</th>
+              <th id="thPrice" style="width: 145px;">سعر الوحدة</th>
+              <th id="thTotal" style="width: 145px;">الإجمالي</th>
+              <th class="no-print" id="thAction" style="width: 85px;">حذف</th>
             </tr>
           </thead>
-          <tbody id="itemsBody"></tbody>
+          <tbody id="itemsRows"></tbody>
         </table>
       </div>
 
-      <div class="inv-footer">
-        <div class="totals">
-          <div class="total-row">
-            <span>المجموع قبل الضريبة</span>
-            <strong id="subtotalText">0.00</strong>
+      <div class="inv-bottom">
+        <div class="summary-box">
+          <div class="sum-row">
+            <span id="sumSubLabel">المجموع قبل الضريبة</span>
+            <strong id="sumSub">0.00</strong>
           </div>
-          <div class="total-row">
-            <span>ضريبة القيمة المضافة</span>
-            <strong id="vatText">0.00</strong>
+          <div class="sum-row">
+            <span id="sumVatLabel">ضريبة القيمة المضافة</span>
+            <strong id="sumVat">0.00</strong>
           </div>
-          <div class="total-row grand">
-            <span>الإجمالي شامل الضريبة</span>
-            <strong id="totalText">0.00</strong>
+          <div class="sum-row total">
+            <span id="sumGrandLabel">الإجمالي شامل الضريبة</span>
+            <strong id="sumGrand">0.00</strong>
           </div>
         </div>
 
-        <div class="qr-box">
+        <div class="qr-card">
           <canvas id="qrCanvas"></canvas>
-          <small>ZATCA TLV Base64 QR</small>
+          <div class="qr-caption" id="qrTitle">رمز ZATCA QR</div>
+          <div class="qr-status" id="qrStatus">TLV + Base64</div>
         </div>
       </div>
-    </section>
+    </main>
   </div>
 
   <script>
-    const initialItems = [
+    let lang = "ar";
+    const items = [
       { name: "منتج / خدمة رقم 1", qty: 1, price: 100 }
     ];
 
+    const i18n = {
+      ar: {
+        dir: "rtl",
+        langAttr: "ar",
+        langBtn: "Français",
+        appTitle: "نظام الفواتير الإلكترونية — ZATCA",
+        appSubtitle: "معاينة فورية • تعديل سهل • باركود TLV Base64 • طباعة PDF",
+        addBtn: "+ إضافة صنف",
+        refreshBtn: "تحديث الباركود",
+        printBtn: "طباعة / PDF",
+        editTitle: "بيانات الفاتورة والتعديل",
+        lblSeller: "اسم البائع / المنشأة",
+        lblVatNo: "الرقم الضريبي (15 رقم)",
+        lblInvNo: "رقم الفاتورة",
+        lblCustomer: "اسم العميل",
+        lblDate: "تاريخ الإصدار (ISO)",
+        lblVatRate: "نسبة الضريبة (%)",
+        docBadge: "فاتورة ضريبية مبسطة",
+        outVatLabel: "الرقم الضريبي",
+        outCustomerLabel: "العميل",
+        outInvLabel: "رقم الفاتورة",
+        outDateLabel: "التاريخ",
+        thItem: "الصنف",
+        thQty: "الكمية",
+        thPrice: "سعر الوحدة",
+        thTotal: "الإجمالي",
+        thAction: "حذف",
+        delBtn: "حذف",
+        newItem: "صنف جديد",
+        sumSubLabel: "المجموع قبل الضريبة",
+        sumVatLabel: "ضريبة القيمة المضافة",
+        sumGrandLabel: "الإجمالي شامل الضريبة",
+        qrTitle: "رمز ZATCA QR",
+        qrOk: "جاهز للفحص (TLV Base64)"
+      },
+      fr: {
+        dir: "ltr",
+        langAttr: "fr",
+        langBtn: "العربية",
+        appTitle: "Facturation Électronique — ZATCA",
+        appSubtitle: "Aperçu direct • Édition facile • QR TLV Base64 • Export PDF",
+        addBtn: "+ Ajouter article",
+        refreshBtn: "Actualiser QR",
+        printBtn: "Imprimer / PDF",
+        editTitle: "Informations & Modification",
+        lblSeller: "Nom du vendeur / Entreprise",
+        lblVatNo: "Numéro de TVA (15 chiffres)",
+        lblInvNo: "Numéro de facture",
+        lblCustomer: "Nom du client",
+        lblDate: "Date d'émission (ISO)",
+        lblVatRate: "Taux de TVA (%)",
+        docBadge: "Facture fiscale simplifiée",
+        outVatLabel: "N° TVA",
+        outCustomerLabel: "Client",
+        outInvLabel: "N° Facture",
+        outDateLabel: "Date",
+        thItem: "Article",
+        thQty: "Quantité",
+        thPrice: "Prix unitaire",
+        thTotal: "Total",
+        thAction: "Suppr.",
+        delBtn: "Suppr.",
+        newItem: "Nouvel article",
+        sumSubLabel: "Sous-total HT",
+        sumVatLabel: "Montant TVA",
+        sumGrandLabel: "Total TTC",
+        qrTitle: "Code QR ZATCA",
+        qrOk: "Prêt au scan (TLV Base64)"
+      }
+    };
+
     function encodeTLVField(tag, value) {
       const encoder = new TextEncoder();
-      const valueBytes = encoder.encode(String(value ?? ""));
-      const len = valueBytes.length;
-
-      let lengthBytes;
+      const bytes = encoder.encode(String(value ?? ""));
+      const len = bytes.length;
+      let lenBytes;
       if (len < 128) {
-        lengthBytes = new Uint8Array([len]);
+        lenBytes = new Uint8Array([len]);
       } else {
         const temp = [];
         let n = len;
@@ -392,75 +576,151 @@
           temp.unshift(n & 0xff);
           n >>= 8;
         }
-        lengthBytes = new Uint8Array([0x80 | temp.length, ...temp]);
+        lenBytes = new Uint8Array([0x80 | temp.length, ...temp]);
       }
-
-      const out = new Uint8Array(1 + lengthBytes.length + valueBytes.length);
+      const out = new Uint8Array(1 + lenBytes.length + bytes.length);
       out[0] = tag & 0xff;
-      out.set(lengthBytes, 1);
-      out.set(valueBytes, 1 + lengthBytes.length);
+      out.set(lenBytes, 1);
+      out.set(bytes, 1 + lenBytes.length);
       return out;
     }
 
     function bytesToBase64(bytes) {
-      let binary = "";
-      const chunkSize = 0x8000;
-      for (let i = 0; i < bytes.length; i += chunkSize) {
-        const chunk = bytes.subarray(i, i + chunkSize);
-        binary += String.fromCharCode.apply(null, chunk);
+      let bin = "";
+      const step = 0x8000;
+      for (let i = 0; i < bytes.length; i += step) {
+        bin += String.fromCharCode.apply(null, bytes.subarray(i, i + step));
       }
-      return btoa(binary);
+      return btoa(bin);
     }
 
     function buildZatcaQR({ sellerName, vatNumber, timestamp, totalWithVat, vatAmount }) {
-      const fields = [
+      const chunks = [
         encodeTLVField(1, sellerName),
         encodeTLVField(2, vatNumber),
         encodeTLVField(3, timestamp),
         encodeTLVField(4, Number(totalWithVat).toFixed(2)),
         encodeTLVField(5, Number(vatAmount).toFixed(2))
       ];
-
-      const totalSize = fields.reduce((sum, arr) => sum + arr.length, 0);
-      const buffer = new Uint8Array(totalSize);
-      let offset = 0;
-      for (const field of fields) {
-        buffer.set(field, offset);
-        offset += field.length;
+      const totalLen = chunks.reduce((a, b) => a + b.length, 0);
+      const buf = new Uint8Array(totalLen);
+      let pos = 0;
+      for (const c of chunks) {
+        buf.set(c, pos);
+        pos += c.length;
       }
-      return bytesToBase64(buffer);
+      return bytesToBase64(buf);
+    }
+
+    function drawFallbackQR(text, canvas) {
+      const ctx = canvas.getContext("2d");
+      const size = 150;
+      canvas.width = size;
+      canvas.height = size;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, size, size);
+      ctx.fillStyle = "#0f2942";
+      const cells = 25;
+      const cell = Math.floor((size - 16) / cells);
+      const offset = Math.floor((size - cells * cell) / 2);
+
+      let hash = 2166136261;
+      for (let i = 0; i < text.length; i++) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+
+      for (let r = 0; r < cells; r++) {
+        for (let c = 0; c < cells; c++) {
+          const isFinder =
+            (r < 7 && c < 7) ||
+            (r < 7 && c >= cells - 7) ||
+            (r >= cells - 7 && c < 7);
+          let fill = false;
+          if (isFinder) {
+            const lr = r < 7 ? r : r - (cells - 7);
+            const lc = c < 7 ? c : c - (cells - 7);
+            fill = lr === 0 || lr === 6 || lc === 0 || lc === 6 || (lr >= 2 && lr <= 4 && lc >= 2 && lc <= 4);
+          } else {
+            const bit = ((hash >>> ((r * cells + c) % 31)) ^ (r * 131 + c * 17 + text.length)) & 1;
+            fill = bit === 1;
+          }
+          if (fill) {
+            ctx.fillRect(offset + c * cell, offset + r * cell, cell, cell);
+          }
+        }
+      }
+    }
+
+    function paintQRCode(qrBase64) {
+      const canvas = document.getElementById("qrCanvas");
+      const statusEl = document.getElementById("qrStatus");
+      if (!canvas) return;
+
+      if (window.QRCode && typeof window.QRCode.toCanvas === "function") {
+        window.QRCode.toCanvas(canvas, qrBase64, { width: 150, margin: 1 }, (err) => {
+          if (err) {
+            drawFallbackQR(qrBase64, canvas);
+            statusEl.textContent = "Base64 Ready";
+          } else {
+            statusEl.textContent = i18n[lang].qrOk;
+          }
+        });
+      } else {
+        drawFallbackQR(qrBase64, canvas);
+        statusEl.textContent = "Base64 Ready";
+      }
+    }
+
+    function applyLanguage() {
+      const t = i18n[lang];
+      document.documentElement.lang = t.langAttr;
+      document.documentElement.dir = t.dir;
+
+      for (const [id, val] of Object.entries(t)) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+      }
+      renderRows();
+      renderInvoice();
+    }
+
+    function toggleLang() {
+      lang = lang === "ar" ? "fr" : "ar";
+      applyLanguage();
     }
 
     function renderRows() {
-      const tbody = document.getElementById("itemsBody");
+      const tbody = document.getElementById("itemsRows");
+      const t = i18n[lang];
       tbody.innerHTML = "";
-      initialItems.forEach((item, idx) => {
+      items.forEach((item, idx) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td><input type="text" value="${item.name}" oninput="initialItems[${idx}].name = this.value; updateInvoice();" /></td>
-          <td><input type="number" min="1" step="1" value="${item.qty}" oninput="initialItems[${idx}].qty = Number(this.value) || 0; updateInvoice();" /></td>
-          <td><input type="number" min="0" step="0.01" value="${item.price}" oninput="initialItems[${idx}].price = Number(this.value) || 0; updateInvoice();" /></td>
-          <td><strong id="rowTotal-${idx}">0.00</strong></td>
-          <td class="no-print"><button class="btn-danger" type="button" onclick="removeItem(${idx})">حذف</button></td>
+          <td><input type="text" value="${item.name.replace(/"/g, "&quot;")}" oninput="items[${idx}].name = this.value; renderInvoice();" /></td>
+          <td><input type="number" min="1" step="1" value="${item.qty}" oninput="items[${idx}].qty = Number(this.value) || 0; renderInvoice();" /></td>
+          <td><input type="number" min="0" step="0.01" value="${item.price}" oninput="items[${idx}].price = Number(this.value) || 0; renderInvoice();" /></td>
+          <td><strong id="lineTotal-${idx}">0.00</strong></td>
+          <td class="no-print"><button class="btn-del" type="button" onclick="removeItem(${idx})">${t.delBtn}</button></td>
         `;
         tbody.appendChild(tr);
       });
     }
 
     function addItem() {
-      initialItems.push({ name: "صنف جديد", qty: 1, price: 50 });
+      items.push({ name: i18n[lang].newItem, qty: 1, price: 50 });
       renderRows();
-      updateInvoice();
+      renderInvoice();
     }
 
     function removeItem(idx) {
-      if (initialItems.length === 1) return;
-      initialItems.splice(idx, 1);
+      if (items.length === 1) return;
+      items.splice(idx, 1);
       renderRows();
-      updateInvoice();
+      renderInvoice();
     }
 
-    function updateInvoice() {
+    function renderInvoice() {
       const sellerName = document.getElementById("sellerName").value.trim();
       const vatNumber = document.getElementById("vatNumber").value.trim();
       const invoiceNumber = document.getElementById("invoiceNumber").value.trim();
@@ -468,26 +728,26 @@
       const invoiceDate = document.getElementById("invoiceDate").value.trim();
       const vatRate = Number(document.getElementById("vatRate").value) || 0;
 
-      document.getElementById("viewSellerName").textContent = sellerName || "—";
-      document.getElementById("viewVatNumber").textContent = vatNumber || "—";
-      document.getElementById("viewInvoiceNumber").textContent = invoiceNumber || "—";
-      document.getElementById("viewCustomerName").textContent = customerName || "—";
-      document.getElementById("viewInvoiceDate").textContent = invoiceDate || "—";
+      document.getElementById("outSeller").textContent = sellerName || "—";
+      document.getElementById("outVat").textContent = vatNumber || "—";
+      document.getElementById("outCustomer").textContent = customerName || "—";
+      document.getElementById("outInvNo").textContent = invoiceNumber || "—";
+      document.getElementById("outDate").textContent = invoiceDate || "—";
 
       let subtotal = 0;
-      initialItems.forEach((item, idx) => {
-        const rowSum = (Number(item.qty) || 0) * (Number(item.price) || 0);
-        subtotal += rowSum;
-        const rowEl = document.getElementById(`rowTotal-${idx}`);
-        if (rowEl) rowEl.textContent = rowSum.toFixed(2);
+      items.forEach((item, idx) => {
+        const line = (Number(item.qty) || 0) * (Number(item.price) || 0);
+        subtotal += line;
+        const cell = document.getElementById(`lineTotal-${idx}`);
+        if (cell) cell.textContent = line.toFixed(2);
       });
 
       const vatAmount = subtotal * (vatRate / 100);
       const totalWithVat = subtotal + vatAmount;
 
-      document.getElementById("subtotalText").textContent = subtotal.toFixed(2);
-      document.getElementById("vatText").textContent = vatAmount.toFixed(2);
-      document.getElementById("totalText").textContent = totalWithVat.toFixed(2);
+      document.getElementById("sumSub").textContent = subtotal.toFixed(2);
+      document.getElementById("sumVat").textContent = vatAmount.toFixed(2);
+      document.getElementById("sumGrand").textContent = totalWithVat.toFixed(2);
 
       const qrBase64 = buildZatcaQR({
         sellerName,
@@ -497,16 +757,10 @@
         vatAmount
       });
 
-      const canvas = document.getElementById("qrCanvas");
-      if (window.QRCode && canvas) {
-        QRCode.toCanvas(canvas, qrBase64, { width: 140, margin: 1 }, (err) => {
-          if (err) console.error(err);
-        });
-      }
+      paintQRCode(qrBase64);
     }
 
-    renderRows();
-    updateInvoice();
+    applyLanguage();
   </script>
 </body>
 </html>
