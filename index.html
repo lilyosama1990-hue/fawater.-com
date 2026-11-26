@@ -1,717 +1,679 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>فاتورة إلكترونية — Facture ZATCA</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
-  <style>
-    :root {
-      --navy: #0e2439;
-      --navy-light: #183a5a;
-      --gold: #c89d54;
-      --gold-bg: #fbf6ec;
-      --bg: #eef2f6;
-      --card: #ffffff;
-      --text: #16202a;
-      --muted: #607080;
-      --border: #e2e8f0;
-      --danger: #c92a2a;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>فاتورة إلكترونية — ZATCA</title>
+<style>
+:root{
+  --navy:#0e2439;
+  --navy-2:#173857;
+  --gold:#c89d54;
+  --gold-soft:#fbf6ec;
+  --bg:#eef2f6;
+  --card:#ffffff;
+  --text:#182230;
+  --muted:#5c6b7e;
+  --line:#e2e8f0;
+  --danger:#c92a2a;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:linear-gradient(180deg,#e7edf4 0%,var(--bg) 100%);
+  color:var(--text);
+  font:15px/1.65 system-ui,"Segoe UI",Tahoma,sans-serif;
+  padding:14px;
+}
+.wrap{max-width:780px;margin:0 auto;display:grid;gap:16px}
+.top-bar{
+  background:linear-gradient(135deg,var(--navy),var(--navy-2));
+  color:#fff;
+  padding:16px 20px;
+  border-radius:16px;
+  border-bottom:3px solid var(--gold);
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 8px 24px rgba(14,36,57,.14);
+}
+.top-bar h1{margin:0;font-size:19px;font-weight:800}
+.top-bar .sub{margin:2px 0 0;font-size:12.5px;color:#d6e2ee}
+.top-actions{display:flex;flex-wrap:wrap;gap:8px}
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 5px 18px rgba(14,36,57,.05);
+}
+h2{
+  font-size:15.5px;
+  margin:20px 0 10px;
+  color:var(--navy);
+  font-weight:800;
+  padding-bottom:6px;
+  border-bottom:1px solid var(--line);
+}
+h2:first-child{margin-top:0}
+label{display:block;color:var(--muted);font-size:12.5px;font-weight:700;margin:10px 0 4px}
+input{
+  width:100%;
+  font:inherit;
+  padding:9px 11px;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+  background:#fcfdff;
+  color:var(--text);
+}
+input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(14,36,57,.08)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>div{flex:1;min-width:130px}
+button{
+  font:inherit;
+  padding:9px 14px;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+  background:#fff;
+  color:var(--text);
+  font-weight:700;
+  cursor:pointer;
+  min-height:40px;
+}
+button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn-gold{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.btn-light{background:#fff;color:var(--navy);border-color:#fff}
+.btn-glass{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.26)}
+.btn-del{background:#ffe3e3;color:var(--danger);border-color:#ffc9c9;padding:5px 10px;min-height:32px;font-size:12px}
+.item{
+  border:1px solid var(--line);
+  background:#fafbfd;
+  border-radius:12px;
+  padding:12px;
+  margin:10px 0;
+}
+.item-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.err{
+  background:#fff5f5;
+  color:var(--danger);
+  border:1px solid #ffc9c9;
+  border-radius:10px;
+  padding:12px;
+  margin:14px 0;
+  display:none;
+  font-size:13.5px;
+  font-weight:700;
+}
+.sheet{
+  border:1px solid #d5dfe9;
+  border-radius:16px;
+  padding:22px;
+  background:#fff;
+  box-shadow:0 10px 26px rgba(14,36,57,.06);
+}
+.badge{
+  display:inline-block;
+  background:var(--gold-soft);
+  color:#875f18;
+  border:1px solid #e7cfa0;
+  padding:3px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+.t{text-align:center;font-size:21px;font-weight:800;color:var(--navy)}
+.t2{text-align:center;color:var(--muted);font-size:13px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--navy)}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:4px 0;font-size:14px}
+.kv span{color:var(--muted)}
+.ln{border-top:1px dashed #cbd5e1;padding:8px 0}
+.ln b{display:block;color:var(--navy)}
+.g{
+  font-weight:800;
+  font-size:16.5px;
+  color:var(--navy);
+  border-top:2px solid var(--navy);
+  margin-top:8px;
+  padding-top:10px;
+}
+#qr{display:flex;justify-content:center;margin-top:16px}
+#qr svg{width:190px;height:190px;border:1px solid var(--line);border-radius:10px;padding:6px;background:#fff}
+.note{
+  background:var(--gold-soft);
+  border:1px solid #ecd7ad;
+  border-radius:12px;
+  padding:12px 14px;
+  margin-top:12px;
+  font-size:13px;
+  color:#433824;
+}
+code{
+  direction:ltr;
+  unicode-bidi:isolate;
+  word-break:break-all;
+  display:block;
+  font-size:12px;
+  background:#f8fafc;
+  border:1px solid var(--line);
+  padding:10px;
+  border-radius:8px;
+  margin-top:8px;
+}
+bdi{unicode-bidi:isolate}
 
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
-    }
-
-    body {
-      margin: 0;
-      padding: 14px;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .wrap {
-      max-width: 960px;
-      margin: 0 auto;
-      display: grid;
-      gap: 16px;
-    }
-
-    .header-bar {
-      background: linear-gradient(135deg, var(--navy), var(--navy-light));
-      color: #fff;
-      padding: 16px 20px;
-      border-radius: 16px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 3px solid var(--gold);
-      box-shadow: 0 8px 24px rgba(14, 36, 57, 0.12);
-    }
-
-    .brand-box h1 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .brand-box span {
-      font-size: 12px;
-      color: #dbe6f0;
-    }
-
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    button {
-      border: none;
-      border-radius: 10px;
-      padding: 9px 14px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn-gold {
-      background: var(--gold);
-      color: var(--navy);
-    }
-
-    .btn-white {
-      background: #fff;
-      color: var(--navy);
-    }
-
-    .btn-glass {
-      background: rgba(255, 255, 255, 0.14);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-    }
-
-    .btn-remove {
-      background: #ffe3e3;
-      color: var(--danger);
-      padding: 6px 10px;
-      font-size: 12px;
-      border-radius: 8px;
-    }
-
-    .box {
-      background: var(--card);
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      padding: 18px;
-      box-shadow: 0 4px 16px rgba(14, 36, 57, 0.04);
-    }
-
-    .box-title {
-      margin: 0 0 14px;
-      font-size: 15px;
-      color: var(--navy);
-      font-weight: 800;
-    }
-
-    .inputs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .field label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--muted);
-    }
-
-    .field input {
-      padding: 9px 11px;
-      border: 1px solid #cbd5e1;
-      border-radius: 9px;
-      font-size: 13.5px;
-      color: var(--text);
-    }
-
-    .quick-add {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px dashed #cbd5e1;
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr auto;
-      gap: 10px;
-      align-items: end;
-    }
-
-    .invoice-card {
-      background: #fff;
-      border-radius: 18px;
-      border: 1px solid #d5dfe9;
-      padding: 24px;
-      box-shadow: 0 10px 28px rgba(14, 36, 57, 0.06);
-    }
-
-    .inv-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      flex-wrap: wrap;
-      padding-bottom: 16px;
-      margin-bottom: 18px;
-      border-bottom: 2px solid var(--navy);
-    }
-
-    .badge {
-      display: inline-block;
-      background: var(--gold-bg);
-      color: #8a621c;
-      border: 1px solid #e8cfa0;
-      padding: 4px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-
-    .inv-top h2 {
-      margin: 0 0 6px;
-      font-size: 21px;
-      color: var(--navy);
-    }
-
-    .info-text {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 3px;
-    }
-
-    .info-text strong {
-      color: var(--text);
-    }
-
-    .inv-meta-box {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
-      min-width: 230px;
-    }
-
-    .table-scroll {
-      overflow-x: auto;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      margin-bottom: 18px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 500px;
-      font-size: 13.5px;
-    }
-
-    th {
-      background: var(--navy);
-      color: #fff;
-      padding: 11px;
-      text-align: inherit;
-    }
-
-    td {
-      padding: 9px 11px;
-      border-top: 1px solid var(--border);
-    }
-
-    td input {
-      width: 100%;
-      padding: 7px 9px;
-      border: 1px solid #cbd5e1;
-      border-radius: 7px;
-      font-size: 13px;
-    }
-
-    .inv-bottom {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 20px;
-      align-items: center;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-
-    .totals-box {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      max-width: 380px;
-      width: 100%;
-    }
-
-    .t-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 7px 0;
-      border-bottom: 1px dashed #cbd5e1;
-      font-size: 13.5px;
-    }
-
-    .t-row.final {
-      border-bottom: none;
-      margin-top: 6px;
-      padding-top: 10px;
-      border-top: 2px solid var(--navy);
-      font-size: 16.5px;
-      font-weight: 800;
-      color: var(--navy);
-    }
-
-    .qr-panel {
-      text-align: center;
-      background: #fff;
-      border: 1px solid #cbd5e1;
-      border-radius: 14px;
-      padding: 14px;
-      min-width: 185px;
-    }
-
-    #qrHolder {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 150px;
-      margin-bottom: 6px;
-    }
-
-    #qrHolder img,
-    #qrHolder canvas {
-      width: 150px;
-      height: 150px;
-      display: block;
-    }
-
-    .qr-label {
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--navy);
-    }
-
-    .qr-sub {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    @media (max-width: 680px) {
-      .quick-add {
-        grid-template-columns: 1fr 1fr;
-      }
-      .quick-add .add-submit {
-        grid-column: 1 / -1;
-      }
-      .inv-meta-box,
-      .totals-box,
-      .qr-panel {
-        width: 100%;
-        max-width: 100%;
-      }
-      .inv-bottom {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media print {
-      body {
-        background: #fff;
-        padding: 0;
-      }
-      .header-bar,
-      .edit-box,
-      .no-print {
-        display: none !important;
-      }
-      .invoice-card {
-        border: none;
-        box-shadow: none;
-        padding: 0;
-      }
-    }
-  </style>
+@media print{
+  body{background:#fff;padding:0}
+  .wrap{max-width:100%;gap:0}
+  .top-bar,.editor-card,.no-print,#out,.note,.print-hide-h2{display:none!important}
+  .card{border:none;box-shadow:none;padding:0}
+  .sheet{border:none;box-shadow:none;padding:0}
+}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header class="header-bar">
-      <div class="brand-box">
-        <h1 id="t_title">نظام الفواتير الإلكترونية — ZATCA</h1>
-        <span id="t_sub">تصميم أنيق • إضافة أصناف سهلة • باركود ZATCA • طباعة PDF</span>
-      </div>
-      <div class="btn-row">
-        <button class="btn-glass" type="button" onclick="switchLang()" id="t_langBtn">Français</button>
-        <button class="btn-gold" type="button" onclick="refreshAll()" id="t_refreshBtn">تحديث الباركود</button>
-        <button class="btn-white" type="button" onclick="window.print()" id="t_printBtn">طباعة / PDF</button>
-      </div>
-    </header>
+<div class="wrap">
+  <header class="top-bar">
+    <div>
+      <h1 id="ui_title">فاتورة إلكترونية سعودية مع QR</h1>
+      <p class="sub" id="ui_sub">صيغة هيئة الزكاة والضريبة والجمارك (المرحلة الأولى)</p>
+    </div>
+    <div class="top-actions">
+      <button type="button" class="btn-glass" id="langToggle">Français</button>
+      <button type="button" class="btn-light" id="printBtn">طباعة / PDF</button>
+    </div>
+  </header>
 
-    <section class="box edit-box">
-      <h2 class="box-title" id="t_editBoxTitle">بيانات الفاتورة وإضافة الأصناف</h2>
-      <div class="inputs-grid">
-        <div class="field">
-          <label for="sellerInput" id="t_lblSeller">اسم البائع / المنشأة</label>
-          <input id="sellerInput" type="text" value="مؤسسة دار الريف التجارية" oninput="refreshAll()" />
-        </div>
-        <div class="field">
-          <label for="vatInput" id="t_lblVat">الرقم الضريبي (15 رقم)</label>
-          <input id="vatInput" type="text" maxlength="15" value="300000000000003" oninput="refreshAll()" />
-        </div>
-        <div class="field">
-          <label for="invNoInput" id="t_lblInvNo">رقم الفاتورة</label>
-          <input id="invNoInput" type="text" value="INV-2026-001" oninput="refreshAll()" />
-        </div>
-        <div class="field">
-          <label for="clientInput" id="t_lblClient">اسم العميل</label>
-          <input id="clientInput" type="text" value="عميل نقدي" oninput="refreshAll()" />
-        </div>
-        <div class="field">
-          <label for="dateInput" id="t_lblDate">تاريخ الإصدار (ISO)</label>
-          <input id="dateInput" type="text" value="2026-11-26T12:15:00Z" oninput="refreshAll()" />
-        </div>
-        <div class="field">
-          <label for="rateInput" id="t_lblRate">نسبة الضريبة (%)</label>
-          <input id="rateInput" type="number" step="0.01" value="15" oninput="refreshAll()" />
-        </div>
-      </div>
+  <section class="card editor-card">
+    <h2 id="ui_kindTitle">نوع الفاتورة</h2>
+    <div class="row">
+      <button id="k1" class="on" type="button">مبسطة (B2C)</button>
+      <button id="k2" type="button">ضريبية كاملة (B2B)</button>
+    </div>
 
-      <div class="quick-add">
-        <div class="field">
-          <label for="newItemName" id="t_lblNewName">اسم الصنف الجديد</label>
-          <input id="newItemName" type="text" placeholder="مثال: شاشة / جهاز / خدمة" />
-        </div>
-        <div class="field">
-          <label for="newItemQty" id="t_lblNewQty">الكمية</label>
-          <input id="newItemQty" type="number" min="1" step="1" value="1" />
-        </div>
-        <div class="field">
-          <label for="newItemPrice" id="t_lblNewPrice">سعر الوحدة</label>
-          <input id="newItemPrice" type="number" min="0" step="0.01" value="100" />
-        </div>
-        <button class="btn-gold add-submit" type="button" onclick="addQuickItem()" id="t_addItemBtn">+ إضافة صنف</button>
-      </div>
-    </section>
+    <label id="ui_rateLbl">نسبة القيمة المضافة</label>
+    <div class="row">
+      <button id="r15" class="on" type="button">15%</button>
+      <button id="r0" type="button">0%</button>
+    </div>
 
-    <main class="invoice-card">
-      <div class="inv-top">
-        <div>
-          <span class="badge" id="t_badge">فاتورة ضريبية مبسطة</span>
-          <h2 id="v_seller">مؤسسة دار الريف التجارية</h2>
-          <div class="info-text"><span id="t_vVatLbl">الرقم الضريبي</span>: <strong id="v_vat">300000000000003</strong></div>
-          <div class="info-text"><span id="t_vClientLbl">العميل</span>: <strong id="v_client">عميل نقدي</strong></div>
-        </div>
-        <div class="inv-meta-box">
-          <div class="info-text"><span id="t_vInvLbl">رقم الفاتورة</span>: <strong id="v_inv">INV-2026-001</strong></div>
-          <div class="info-text"><span id="t_vDateLbl">التاريخ</span>: <strong id="v_date">2026-11-26T12:15:00Z</strong></div>
-        </div>
-      </div>
+    <h2 id="ui_sellerTitle">بيانات البائع</h2>
+    <label id="ui_sellerLbl">اسم البائع</label>
+    <input id="seller" value="شركة الأفق للتجارة">
 
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th id="t_thName">الصنف</th>
-              <th id="t_thQty" style="width: 110px;">الكمية</th>
-              <th id="t_thPrice" style="width: 140px;">سعر الوحدة</th>
-              <th id="t_thTotal" style="width: 140px;">الإجمالي</th>
-              <th class="no-print" id="t_thDel" style="width: 80px;">حذف</th>
-            </tr>
-          </thead>
-          <tbody id="rowsBody"></tbody>
-        </table>
-      </div>
+    <label id="ui_vatLbl">الرقم الضريبي (15 رقم، يبدأ وينتهي بـ 3)</label>
+    <input id="vat" inputmode="numeric" value="310122393500003">
 
-      <div class="inv-bottom">
-        <div class="totals-box">
-          <div class="t-row">
-            <span id="t_subLbl">المجموع قبل الضريبة</span>
-            <strong id="v_sub">0.00</strong>
-          </div>
-          <div class="t-row">
-            <span id="t_vatAmtLbl">ضريبة القيمة المضافة</span>
-            <strong id="v_vatAmt">0.00</strong>
-          </div>
-          <div class="t-row final">
-            <span id="t_grandLbl">الإجمالي شامل الضريبة</span>
-            <strong id="v_grand">0.00</strong>
-          </div>
-        </div>
+    <label id="ui_invLbl">رقم الفاتورة</label>
+    <input id="inv" value="INV-0001">
 
-        <div class="qr-panel">
-          <div id="qrHolder"></div>
-          <div class="qr-label" id="t_qrTitle">رمز ZATCA QR</div>
-          <div class="qr-sub" id="t_qrState">TLV + Base64</div>
-        </div>
-      </div>
-    </main>
-  </div>
+    <label id="ui_whenLbl">التاريخ والوقت (توقيت الرياض)</label>
+    <div class="row">
+      <div><input id="whenDate" type="date"></div>
+      <div><input id="whenTime" type="time" step="1"></div>
+      <button id="nowBtn" type="button" class="btn-gold" style="flex:0 0 auto">الآن</button>
+    </div>
 
-  <script>
-    let currentLang = "ar";
-    const rows = [
-      { name: "منتج / خدمة رقم 1", qty: 1, price: 100 }
-    ];
+    <div id="buyerBox" style="display:none">
+      <h2 id="ui_buyerTitle">بيانات المشتري</h2>
+      <label id="ui_buyerLbl">اسم المشتري</label>
+      <input id="buyer">
+      <label id="ui_bvatLbl">الرقم الضريبي للمشتري (اختياري)</label>
+      <input id="bvat" inputmode="numeric">
+    </div>
 
-    const dict = {
-      ar: {
-        dir: "rtl",
-        lang: "ar",
-        t_title: "نظام الفواتير الإلكترونية — ZATCA",
-        t_sub: "تصميم أنيق • إضافة أصناف سهلة • باركود ZATCA • طباعة PDF",
-        t_langBtn: "Français",
-        t_refreshBtn: "تحديث الباركود",
-        t_printBtn: "طباعة / PDF",
-        t_editBoxTitle: "بيانات الفاتورة وإضافة الأصناف",
-        t_lblSeller: "اسم البائع / المنشأة",
-        t_lblVat: "الرقم الضريبي (15 رقم)",
-        t_lblInvNo: "رقم الفاتورة",
-        t_lblClient: "اسم العميل",
-        t_lblDate: "تاريخ الإصدار (ISO)",
-        t_lblRate: "نسبة الضريبة (%)",
-        t_lblNewName: "اسم الصنف الجديد",
-        t_lblNewQty: "الكمية",
-        t_lblNewPrice: "سعر الوحدة",
-        t_addItemBtn: "+ إضافة صنف",
-        t_badge: "فاتورة ضريبية مبسطة",
-        t_vVatLbl: "الرقم الضريبي",
-        t_vClientLbl: "العميل",
-        t_vInvLbl: "رقم الفاتورة",
-        t_vDateLbl: "التاريخ",
-        t_thName: "الصنف",
-        t_thQty: "الكمية",
-        t_thPrice: "سعر الوحدة",
-        t_thTotal: "الإجمالي",
-        t_thDel: "حذف",
-        delText: "حذف",
-        defaultItemName: "صنف جديد",
-        t_subLbl: "المجموع قبل الضريبة",
-        t_vatAmtLbl: "ضريبة القيمة المضافة",
-        t_grandLbl: "الإجمالي شامل الضريبة",
-        t_qrTitle: "رمز ZATCA QR",
-        t_qrState: "TLV Base64 جاهز للفحص"
-      },
-      fr: {
-        dir: "ltr",
-        lang: "fr",
-        t_title: "Facturation Électronique — ZATCA",
-        t_sub: "Design élégant • Ajout facile • QR ZATCA • Export PDF",
-        t_langBtn: "العربية",
-        t_refreshBtn: "Actualiser QR",
-        t_printBtn: "Imprimer / PDF",
-        t_editBoxTitle: "Infos Facture & Ajout d'Articles",
-        t_lblSeller: "Nom du vendeur / Entreprise",
-        t_lblVat: "Numéro de TVA (15 chiffres)",
-        t_lblInvNo: "Numéro de facture",
-        t_lblClient: "Nom du client",
-        t_lblDate: "Date d'émission (ISO)",
-        t_lblRate: "Taux de TVA (%)",
-        t_lblNewName: "Nom du nouvel article",
-        t_lblNewQty: "Quantité",
-        t_lblNewPrice: "Prix unitaire",
-        t_addItemBtn: "+ Ajouter article",
-        t_badge: "Facture fiscale simplifiée",
-        t_vVatLbl: "N° TVA",
-        t_vClientLbl: "Client",
-        t_vInvLbl: "N° Facture",
-        t_vDateLbl: "Date",
-        t_thName: "Article",
-        t_thQty: "Quantité",
-        t_thPrice: "Prix unitaire",
-        t_thTotal: "Total",
-        t_thDel: "Suppr.",
-        delText: "Suppr.",
-        defaultItemName: "Nouvel article",
-        t_subLbl: "Sous-total HT",
-        t_vatAmtLbl: "Montant TVA",
-        t_grandLbl: "Total TTC",
-        t_qrTitle: "Code QR ZATCA",
-        t_qrState: "TLV Base64 prêt au scan"
-      }
-    };
+    <h2 id="ui_itemsTitle">البنود</h2>
+    <div id="items"></div>
+    <button id="add" type="button" class="btn-gold">إضافة بند</button>
 
-    function tlvPart(tag, val) {
-      const enc = new TextEncoder();
-      const raw = enc.encode(String(val ?? ""));
-      let lenBytes;
-      if (raw.length < 128) {
-        lenBytes = new Uint8Array([raw.length]);
-      } else {
-        const stack = [];
-        let n = raw.length;
-        while (n > 0) {
-          stack.unshift(n & 0xff);
-          n >>= 8;
+    <div class="err" id="err"></div>
+  </section>
+
+  <section class="card">
+    <h2 id="ui_sheetTitle" class="print-hide-h2">الفاتورة</h2>
+    <div class="sheet" id="sheet"></div>
+    <div id="out"></div>
+    <div class="note" id="ui_note">
+      <b>حدود مهمة:</b> الـ QR هنا للمرحلة الأولى (التوليد) وفيه 5 حقول: اسم البائع، الرقم الضريبي، الوقت، الإجمالي شامل الضريبة، قيمة الضريبة. المرحلة الثانية (الربط مع هيئة الزكاة) تحتاج حقولاً إضافية: بصمة الفاتورة، التوقيع الرقمي، المفتاح العام، وشهادة من الهيئة، ونظاماً مسجلاً ومربوطاً بالهيئة. هذه الصفحة لا ترسل شيئاً للهيئة ولا تحفظ أي بيانات. راجع المتطلبات مع محاسب قبل الاستخدام الرسمي.
+    </div>
+  </section>
+</div>
+
+<script>
+const ECC_PER_BLOCK = [10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 28];
+const NUM_BLOCKS = [1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16];
+
+function alignPositions(ver) {
+    if (ver === 1) return [];
+    const n = Math.floor(ver / 7) + 2;
+    const size = ver * 4 + 17;
+    const step = Math.ceil((ver * 4 + 4) / (n * 2 - 2)) * 2;
+    const res = [6];
+    for (let pos = size - 7; res.length < n; pos -= step) res.splice(1, 0, pos);
+    return res;
+}
+
+function rawModules(ver) {
+    const size = ver * 4 + 17;
+    let r = size * size - 8 * 8 * 3 - 15 * 2 - 1 - (size - 16) * 2;
+    if (ver >= 2) {
+        const n = Math.floor(ver / 7) + 2;
+        r -= (n - 1) * (n - 1) * 25;
+        r -= (n - 2) * 2 * 20;
+        if (ver >= 7) r -= 6 * 3 * 2;
+    }
+    return r;
+}
+
+function dataCodewords(ver) {
+    return Math.floor(rawModules(ver) / 8) - ECC_PER_BLOCK[ver - 1] * NUM_BLOCKS[ver - 1];
+}
+
+function gmul(x, y) {
+    let z = 0;
+    for (let i = 7; i >= 0; i--) {
+        z = (z << 1) ^ ((z >>> 7) * 0x11d);
+        z ^= ((y >>> i) & 1) * x;
+    }
+    return z & 0xff;
+}
+
+function rsRemainder(data, degree) {
+    const div = new Array(degree).fill(0);
+    div[degree - 1] = 1;
+    let root = 1;
+    for (let i = 0; i < degree; i++) {
+        for (let j = 0; j < degree; j++) {
+            div[j] = gmul(div[j], root);
+            if (j + 1 < degree) div[j] ^= div[j + 1];
         }
-        lenBytes = new Uint8Array([0x80 | stack.length, ...stack]);
-      }
-      const out = new Uint8Array(1 + lenBytes.length + raw.length);
-      out[0] = tag & 0xff;
-      out.set(lenBytes, 1);
-      out.set(raw, 1 + lenBytes.length);
-      return out;
+        root = gmul(root, 2);
     }
-
-    function toBase64Bytes(u8) {
-      let s = "";
-      const step = 0x8000;
-      for (let i = 0; i < u8.length; i += step) {
-        s += String.fromCharCode.apply(null, u8.subarray(i, i + step));
-      }
-      return btoa(s);
+    const res = new Array(degree).fill(0);
+    for (const b of data) {
+        const f = b ^ res.shift();
+        res.push(0);
+        div.forEach((c, i) => { res[i] ^= gmul(c, f); });
     }
+    return res;
+}
 
-    function createZatcaBase64({ seller, vat, dateIso, total, vatAmount }) {
-      const parts = [
-        tlvPart(1, seller),
-        tlvPart(2, vat),
-        tlvPart(3, dateIso),
-        tlvPart(4, Number(total).toFixed(2)),
-        tlvPart(5, Number(vatAmount).toFixed(2))
-      ];
-      const size = parts.reduce((sum, p) => sum + p.length, 0);
-      const merged = new Uint8Array(size);
-      let at = 0;
-      for (const p of parts) {
-        merged.set(p, at);
-        at += p.length;
-      }
-      return toBase64Bytes(merged);
+function qrMatrix(bytes) {
+    let ver = 1;
+    for (; ver <= 20; ver++) {
+        const cap = dataCodewords(ver) * 8;
+        const used = 4 + (ver < 10 ? 8 : 16) + bytes.length * 8;
+        if (used <= cap) break;
     }
-
-    function renderRealQR(base64Str) {
-      const holder = document.getElementById("qrHolder");
-      const stateEl = document.getElementById("t_qrState");
-      holder.innerHTML = "";
-
-      if (typeof window.qrcode === "function") {
-        const qr = window.qrcode(0, "M");
-        qr.addData(base64Str);
-        qr.make();
-        holder.innerHTML = qr.createImgTag(4, 4);
-        stateEl.textContent = dict[currentLang].t_qrState;
-      } else {
-        stateEl.textContent = "تعذر تحميل مكتبة QR";
-      }
+    if (ver > 20) throw new Error('too long');
+    const bits = [];
+    const put = (v, n) => { for (let i = n - 1; i >= 0; i--) bits.push((v >>> i) & 1); };
+    put(4, 4);
+    put(bytes.length, ver < 10 ? 8 : 16);
+    bytes.forEach((b) => put(b, 8));
+    const capBits = dataCodewords(ver) * 8;
+    put(0, Math.min(4, capBits - bits.length));
+    while (bits.length % 8) bits.push(0);
+    for (let pad = 0xec; bits.length < capBits; pad ^= 0xec ^ 0x11) put(pad, 8);
+    const data = [];
+    for (let i = 0; i < bits.length; i += 8) {
+        let v = 0;
+        for (let j = 0; j < 8; j++) v = (v << 1) | bits[i + j];
+        data.push(v);
     }
-
-    function switchLang() {
-      currentLang = currentLang === "ar" ? "fr" : "ar";
-      applyTexts();
+    const nb = NUM_BLOCKS[ver - 1];
+    const eccLen = ECC_PER_BLOCK[ver - 1];
+    const raw = Math.floor(rawModules(ver) / 8);
+    const numShort = nb - (raw % nb);
+    const shortLen = Math.floor(raw / nb);
+    const blocks = [];
+    for (let i = 0, k = 0; i < nb; i++) {
+        const dat = data.slice(k, k + shortLen - eccLen + (i < numShort ? 0 : 1));
+        k += dat.length;
+        const ecc = rsRemainder(dat, eccLen);
+        if (i < numShort) dat.push(0);
+        blocks.push(dat.concat(ecc));
     }
-
-    function applyTexts() {
-      const d = dict[currentLang];
-      document.documentElement.lang = d.lang;
-      document.documentElement.dir = d.dir;
-      for (const [key, value] of Object.entries(d)) {
-        const node = document.getElementById(key);
-        if (node) node.textContent = value;
-      }
-      drawTableRows();
-      refreshAll();
+    const all = [];
+    for (let i = 0; i < blocks[0].length; i++) {
+        blocks.forEach((blk, j) => { if (i !== shortLen - eccLen || j >= numShort) all.push(blk[i]); });
     }
-
-    function addQuickItem() {
-      const nameInput = document.getElementById("newItemName");
-      const qtyInput = document.getElementById("newItemQty");
-      const priceInput = document.getElementById("newItemPrice");
-
-      const name = nameInput.value.trim() || dict[currentLang].defaultItemName;
-      const qty = Math.max(1, Number(qtyInput.value) || 1);
-      const price = Math.max(0, Number(priceInput.value) || 0);
-
-      rows.push({ name, qty, price });
-      nameInput.value = "";
-      qtyInput.value = "1";
-      priceInput.value = "100";
-
-      drawTableRows();
-      refreshAll();
+    const size = ver * 4 + 17;
+    const m = Array.from({ length: size }, () => new Array(size).fill(false));
+    const fn = Array.from({ length: size }, () => new Array(size).fill(false));
+    const set = (x, y, v) => { m[y][x] = v; fn[y][x] = true; };
+    for (let i = 0; i < size; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
+    const finder = (cx, cy) => {
+        for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
+            const d = Math.max(Math.abs(dx), Math.abs(dy));
+            const x = cx + dx, y = cy + dy;
+            if (x >= 0 && x < size && y >= 0 && y < size) set(x, y, d !== 2 && d !== 4);
+        }
+    };
+    finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
+    const ap = alignPositions(ver);
+    ap.forEach((cx, i) => ap.forEach((cy, j) => {
+        if ((i === 0 && j === 0) || (i === 0 && j === ap.length - 1) || (i === ap.length - 1 && j === 0)) return;
+        for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(cx + dx, cy + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+    }));
+    const drawFormat = (mask) => {
+        const d = (0 << 3) | mask;
+        let rem = d;
+        for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+        const f = ((d << 10) | rem) ^ 0x5412;
+        const bit = (i) => ((f >>> i) & 1) !== 0;
+        for (let i = 0; i <= 5; i++) set(8, i, bit(i));
+        set(8, 7, bit(6)); set(8, 8, bit(7)); set(7, 8, bit(8));
+        for (let i = 9; i < 15; i++) set(14 - i, 8, bit(i));
+        for (let i = 0; i < 8; i++) set(size - 1 - i, 8, bit(i));
+        for (let i = 8; i < 15; i++) set(8, size - 15 + i, bit(i));
+        set(8, size - 8, true);
+    };
+    drawFormat(0);
+    if (ver >= 7) {
+        let rem = ver;
+        for (let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1f25);
+        const v = (ver << 12) | rem;
+        for (let i = 0; i < 18; i++) {
+            const c = ((v >>> i) & 1) !== 0;
+            const a = size - 11 + (i % 3), b = Math.floor(i / 3);
+            set(a, b, c); set(b, a, c);
+        }
     }
-
-    function removeRow(index) {
-      if (rows.length === 1) return;
-      rows.splice(index, 1);
-      drawTableRows();
-      refreshAll();
+    let bi = 0;
+    for (let right = size - 1; right >= 1; right -= 2) {
+        if (right === 6) right = 5;
+        for (let vert = 0; vert < size; vert++) for (let j = 0; j < 2; j++) {
+            const x = right - j;
+            const up = ((right + 1) & 2) === 0;
+            const y = up ? size - 1 - vert : vert;
+            if (!fn[y][x] && bi < all.length * 8) {
+                m[y][x] = ((all[bi >>> 3] >>> (7 - (bi & 7))) & 1) !== 0;
+                bi++;
+            }
+        }
     }
+    const masks = [
+        (x, y) => (x + y) % 2 === 0,
+        (_x, y) => y % 2 === 0,
+        (x) => x % 3 === 0,
+        (x, y) => (x + y) % 3 === 0,
+        (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0,
+        (x, y) => ((x * y) % 2) + ((x * y) % 3) === 0,
+        (x, y) => (((x * y) % 2) + ((x * y) % 3)) % 2 === 0,
+        (x, y) => (((x + y) % 2) + ((x * y) % 3)) % 2 === 0,
+    ];
+    const applyMask = (k) => {
+        for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (!fn[y][x] && masks[k](x, y)) m[y][x] = !m[y][x];
+    };
+    const penalty = () => {
+        let p = 0;
+        const line = (get) => {
+            let run = 1;
+            for (let i = 1; i < size; i++) {
+                if (get(i) === get(i - 1)) run++;
+                else { if (run >= 5) p += 3 + run - 5; run = 1; }
+            }
+            if (run >= 5) p += 3 + run - 5;
+            const s = Array.from({ length: size }, (_, i) => (get(i) ? '1' : '0')).join('');
+            for (const pat of ['00001011101', '10111010000']) {
+                let at = s.indexOf(pat);
+                while (at >= 0) { p += 40; at = s.indexOf(pat, at + 1); }
+            }
+        };
+        for (let y = 0; y < size; y++) line((i) => m[y][i]);
+        for (let x = 0; x < size; x++) line((i) => m[i][x]);
+        for (let y = 0; y < size - 1; y++) for (let x = 0; x < size - 1; x++) {
+            const c = m[y][x];
+            if (c === m[y][x + 1] && c === m[y + 1][x] && c === m[y + 1][x + 1]) p += 3;
+        }
+        let dark = 0;
+        m.forEach((r) => r.forEach((c) => { if (c) dark++; }));
+        p += Math.floor(Math.abs(dark * 20 - size * size * 10) / (size * size)) * 10;
+        return p;
+    };
+    let best = 0, bestP = Infinity;
+    for (let k = 0; k < 8; k++) {
+        applyMask(k); drawFormat(k);
+        const p = penalty();
+        if (p < bestP) { best = k; bestP = p; }
+        applyMask(k);
+    }
+    applyMask(best); drawFormat(best);
+    return m;
+}
 
-    function drawTableRows() {
-      const tbody = document.getElementById("rowsBody");
-      const delLabel = dict[currentLang].delText;
-      tbody.innerHTML = "";
+function utf8(s) { return Array.from(new TextEncoder().encode(s)); }
+function tlv(tag, value) { const v = utf8(value); return [tag, v.length, ...v]; }
+function zatcaPayload(seller, vat, timestamp, total, vatTotal) {
+    const bytes = [...tlv(1, seller), ...tlv(2, vat), ...tlv(3, timestamp), ...tlv(4, total), ...tlv(5, vatTotal)];
+    let bin = '';
+    bytes.forEach((b) => { bin += String.fromCharCode(b); });
+    return btoa(bin);
+}
 
-      rows.forEach((item, idx) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><input type="text" value="${item.name.replace(/"/g, "&quot;")}" oninput="rows[${idx}].name = this.value; refreshAll();" /></td>
-          <td><input type="number" min="1" step="1" value="${item.qty}" oninput="rows[${idx}].qty = Number(this.value) || 0; refreshAll();" /></td>
-          <td><input type="number" min="0" step="0.01" value="${item.price}" oninput="rows[${idx}].price = Number(this.value) || 0; refreshAll();" /></td>
-          <td><strong id="rowSum-${idx}">0.00</strong></td>
-          <td class="no-print"><button class="btn-remove" type="button" onclick="removeRow(${idx})">${delLabel}</button></td>
-        `;
-        tbody.appendChild(tr);
+const TXT = {
+  ar: {
+    dir: 'rtl', lang: 'ar', toggle: 'Français', print: 'طباعة / PDF',
+    title: 'فاتورة إلكترونية سعودية مع QR',
+    sub: 'صيغة هيئة الزكاة والضريبة والجمارك (المرحلة الأولى)',
+    kindTitle: 'نوع الفاتورة', k1: 'مبسطة (B2C)', k2: 'ضريبية كاملة (B2B)',
+    rateLbl: 'نسبة القيمة المضافة',
+    sellerTitle: 'بيانات البائع', sellerLbl: 'اسم البائع',
+    vatLbl: 'الرقم الضريبي (15 رقم، يبدأ وينتهي بـ 3)',
+    invLbl: 'رقم الفاتورة', whenLbl: 'التاريخ والوقت (توقيت الرياض)', now: 'الآن',
+    buyerTitle: 'بيانات المشتري', buyerLbl: 'اسم المشتري', bvatLbl: 'الرقم الضريبي للمشتري (اختياري)',
+    itemsTitle: 'البنود', add: 'إضافة بند', itemLabel: 'بند', del: 'حذف',
+    desc: 'الوصف', qty: 'الكمية', price: 'سعر الوحدة قبل الضريبة',
+    sheetTitle: 'الفاتورة',
+    simpTitle: 'فاتورة ضريبية مبسطة', stdTitle: 'فاتورة ضريبية',
+    simpSub: 'Tax Invoice (Simplified)', stdSub: 'Tax Invoice',
+    invNo: 'رقم الفاتورة', dateLbl: 'التاريخ', sellerLblOut: 'البائع', vatLblOut: 'الرقم الضريبي',
+    buyerLblOut: 'المشتري', bvatLblOut: 'الرقم الضريبي للمشتري',
+    netLbl: 'الإجمالي بدون ضريبة', vatAmtLbl: 'ضريبة القيمة المضافة', totalLbl: 'الإجمالي شامل الضريبة',
+    cur: 'ر.س', qrErr: 'صحح البيانات علشان يظهر الـ QR', qrOut: 'نص الـ QR (Base64)',
+    errSeller: 'اكتب اسم البائع.',
+    errVat: 'الرقم الضريبي لازم يكون 15 رقم، يبدأ بـ 3 وينتهي بـ 3.',
+    errWhen: 'اختر التاريخ والوقت.',
+    errBuyer: 'الفاتورة الضريبية الكاملة لازم فيها اسم المشتري.',
+    errBvat: 'الرقم الضريبي للمشتري غير صحيح.',
+    errItem: 'كل بند لازم يكون له وصف وكمية وسعر صحيحين.',
+    errLong: 'البيانات طويلة زيادة على الـ QR.'
+  },
+  fr: {
+    dir: 'ltr', lang: 'fr', toggle: 'العربية', print: 'Imprimer / PDF',
+    title: 'Facture Électronique avec QR — ZATCA',
+    sub: 'Format ZATCA (Phase 1 — Génération QR)',
+    kindTitle: 'Type de facture', k1: 'Simplifiée (B2C)', k2: 'Fiscale complète (B2B)',
+    rateLbl: 'Taux de TVA',
+    sellerTitle: 'Infos vendeur', sellerLbl: 'Nom du vendeur',
+    vatLbl: 'Numéro de TVA (15 chiffres, débute et finit par 3)',
+    invLbl: 'Numéro de facture', whenLbl: 'Date et heure (Heure de Riyad)', now: 'Maintenant',
+    buyerTitle: 'Infos acheteur', buyerLbl: 'Nom de l\'acheteur', bvatLbl: 'N° TVA acheteur (optionnel)',
+    itemsTitle: 'Articles', add: 'Ajouter un article', itemLabel: 'Article', del: 'Suppr.',
+    desc: 'Désignation', qty: 'Quantité', price: 'Prix unitaire HT',
+    sheetTitle: 'Aperçu de la facture',
+    simpTitle: 'Facture fiscale simplifiée', stdTitle: 'Facture fiscale',
+    simpSub: 'Tax Invoice (Simplified)', stdSub: 'Tax Invoice',
+    invNo: 'N° Facture', dateLbl: 'Date', sellerLblOut: 'Vendeur', vatLblOut: 'N° TVA',
+    buyerLblOut: 'Acheteur', bvatLblOut: 'N° TVA acheteur',
+    netLbl: 'Total HT', vatAmtLbl: 'Montant TVA', totalLbl: 'Total TTC',
+    cur: 'SAR', qrErr: 'Corrigez les champs pour afficher le QR', qrOut: 'Texte QR (Base64)',
+    errSeller: 'Saisissez le nom du vendeur.',
+    errVat: 'Le N° de TVA doit contenir 15 chiffres et commencer/finir par 3.',
+    errWhen: 'Choisissez la date et l\'heure.',
+    errBuyer: 'La facture fiscale complète exige le nom de l\'acheteur.',
+    errBvat: 'Le N° de TVA de l\'acheteur est invalide.',
+    errItem: 'Chaque article doit avoir une désignation, quantité et prix valides.',
+    errLong: 'Les données dépassent la capacité du QR.'
+  }
+};
+
+var $ = function(i){return document.getElementById(i)};
+var lang = 'ar', kind = 'simplified', rate = 15, items = [{n:'خدمة استشارية', q:'1', p:'1000'}];
+
+function setNowRiyadh(){
+  var d = new Date(Date.now() + 3 * 3600 * 1000);
+  var iso = d.toISOString();
+  $('whenDate').value = iso.slice(0, 10);
+  $('whenTime').value = iso.slice(11, 19);
+}
+setNowRiyadh();
+$('nowBtn').onclick = function(){ setNowRiyadh(); update(); };
+
+function cents(s){
+  s = String(s).replace(/[٠-٩]/g, function(c){return '٠١٢٣٤٥٦٧٨٩'.indexOf(c)}).replace(',', '.');
+  var n = Number(s);
+  return isFinite(n) && n >= 0 && s.trim() !== '' ? Math.round(n * 100) : NaN;
+}
+function money(c){return (c / 100).toFixed(2)}
+function esc(s){return String(s).replace(/[&<>"]/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+function renderItems(){
+  var t = TXT[lang], h = '';
+  items.forEach(function(it, i){
+    h += '<div class="item"><div class="item-top"><b>' + t.itemLabel + ' ' + (i + 1) + '</b>' +
+      (items.length > 1 ? '<button type="button" class="btn-del" data-del="' + i + '">' + t.del + '</button>' : '') +
+      '</div><label>' + t.desc + '</label><input data-f="n" data-i="' + i + '" value="' + esc(it.n) + '">' +
+      '<div class="row"><div><label>' + t.qty + '</label><input inputmode="decimal" data-f="q" data-i="' + i + '" value="' + esc(it.q) + '"></div>' +
+      '<div><label>' + t.price + '</label><input inputmode="decimal" data-f="p" data-i="' + i + '" value="' + esc(it.p) + '"></div></div></div>';
+  });
+  $('items').innerHTML = h;
+}
+
+function applyLangUI(){
+  var t = TXT[lang];
+  document.documentElement.lang = t.lang;
+  document.documentElement.dir = t.dir;
+  $('langToggle').textContent = t.toggle;
+  $('printBtn').textContent = t.print;
+  $('ui_title').textContent = t.title;
+  $('ui_sub').textContent = t.sub;
+  $('ui_kindTitle').textContent = t.kindTitle;
+  $('k1').textContent = t.k1;
+  $('k2').textContent = t.k2;
+  $('ui_rateLbl').textContent = t.rateLbl;
+  $('ui_sellerTitle').textContent = t.sellerTitle;
+  $('ui_sellerLbl').textContent = t.sellerLbl;
+  $('ui_vatLbl').textContent = t.vatLbl;
+  $('ui_invLbl').textContent = t.invLbl;
+  $('ui_whenLbl').textContent = t.whenLbl;
+  $('nowBtn').textContent = t.now;
+  $('ui_buyerTitle').textContent = t.buyerTitle;
+  $('ui_buyerLbl').textContent = t.buyerLbl;
+  $('ui_bvatLbl').textContent = t.bvatLbl;
+  $('ui_itemsTitle').textContent = t.itemsTitle;
+  $('add').textContent = t.add;
+  $('ui_sheetTitle').textContent = t.sheetTitle;
+}
+
+function update(){
+  var t = TXT[lang];
+  var errs = [], seller = $('seller').value.trim(), vat = $('vat').value.replace(/\D/g, '').slice(0, 15),
+      buyer = $('buyer').value.trim(), bvat = $('bvat').value.replace(/\D/g, '');
+  var dVal = $('whenDate').value, tVal = ($('whenTime').value || '00:00:00');
+  if (tVal.length === 5) tVal += ':00';
+  var when = (/^\d{4}-\d{2}-\d{2}$/.test(dVal) && /^\d{2}:\d{2}:\d{2}$/.test(tVal)) ? (dVal + 'T' + tVal) : '';
+
+  if (!seller) errs.push(t.errSeller);
+  if (!/^3\d{13}3$/.test(vat)) errs.push(t.errVat);
+  if (!when) errs.push(t.errWhen);
+  if (kind === 'standard') {
+    if (!buyer) errs.push(t.errBuyer);
+    if (bvat && !/^3\d{13}3$/.test(bvat)) errs.push(t.errBvat);
+  }
+
+  var net = 0, bad = false, lines = '';
+  items.forEach(function(it){
+    var q = Number(it.q), p = cents(it.p), ok = it.n.trim() && isFinite(q) && q > 0 && isFinite(p);
+    if (!ok) bad = true;
+    var l = ok ? Math.round(q * p) : 0;
+    net += l;
+    lines += '<div class="ln"><b>' + esc(it.n || '-') + '</b><div class="kv"><span><bdi>' + esc(it.q) + ' × ' + (ok ? money(p) : '-') + '</bdi></span><b><bdi>' + money(l) + '</bdi></b></div></div>';
+  });
+  if (!items.length || bad) errs.push(t.errItem);
+
+  var vatAmt = Math.round(net * rate / 100), total = net + vatAmt, svg = '', payload = '';
+  if (!errs.length) {
+    try {
+      payload = zatcaPayload(seller, vat, when + 'Z', money(total), money(vatAmt));
+      var m = qrMatrix(utf8(payload)), n = m.length + 8, p = '';
+      m.forEach(function(r, y){
+        r.forEach(function(c, x){
+          if (c) p += 'M' + (x + 4) + ' ' + (y + 4) + 'h1v1h-1z';
+        });
       });
+      svg = '<svg viewBox="0 0 ' + n + ' ' + n + '" shape-rendering="crispEdges"><rect width="' + n + '" height="' + n + '" fill="#fff"/><path d="' + p + '"/></svg>';
+    } catch (e) {
+      errs.push(t.errLong);
     }
+  }
 
-    function refreshAll() {
-      const seller = document.getElementById("sellerInput").value.trim();
-      const vat = document.getElementById("vatInput").value.trim();
-      const inv = document.getElementById("invNoInput").value.trim();
-      const client = document.getElementById("clientInput").value.trim();
-      const dateIso = document.getElementById("dateInput").value.trim();
-      const rate = Number(document.getElementById("rateInput").value) || 0;
+  var e = $('err');
+  e.style.display = errs.length ? 'block' : 'none';
+  e.textContent = errs.join(' ');
 
-      document.getElementById("v_seller").textContent = seller || "—";
-      document.getElementById("v_vat").textContent = vat || "—";
-      document.getElementById("v_inv").textContent = inv || "—";
-      document.getElementById("v_client").textContent = client || "—";
-      document.getElementById("v_date").textContent = dateIso || "—";
+  $('sheet').innerHTML =
+    '<div style="text-align:center"><span class="badge">' + (kind === 'simplified' ? t.simpTitle : t.stdTitle) + '</span></div>' +
+    '<div class="t">' + (kind === 'simplified' ? t.simpTitle : t.stdTitle) + '</div>' +
+    '<div class="t2">' + (kind === 'simplified' ? t.simpSub : t.stdSub) + '</div>' +
+    '<div class="kv"><span>' + t.invNo + '</span><bdi>' + esc($('inv').value) + '</bdi></div>' +
+    '<div class="kv"><span>' + t.dateLbl + '</span><bdi>' + esc(when.replace('T', ' ')) + '</bdi></div>' +
+    '<div class="kv"><span>' + t.sellerLblOut + '</span>' + esc(seller) + '</div>' +
+    '<div class="kv"><span>' + t.vatLblOut + '</span><bdi>' + esc(vat) + '</bdi></div>' +
+    (kind === 'standard'
+      ? '<div class="kv"><span>' + t.buyerLblOut + '</span>' + esc(buyer || '-') + '</div>' +
+        (bvat ? '<div class="kv"><span>' + t.bvatLblOut + '</span><bdi>' + esc(bvat) + '</bdi></div>' : '')
+      : '') +
+    '<div style="margin-top:8px">' + lines + '</div>' +
+    '<div class="kv"><span>' + t.netLbl + '</span><bdi>' + money(net) + ' ' + t.cur + '</bdi></div>' +
+    '<div class="kv"><span>' + t.vatAmtLbl + ' (' + rate + '%)</span><bdi>' + money(vatAmt) + ' ' + t.cur + '</bdi></div>' +
+    '<div class="kv g"><span>' + t.totalLbl + '</span><bdi>' + money(total) + ' ' + t.cur + '</bdi></div>' +
+    '<div id="qr">' + (svg || '<span style="color:#5c6b7e">' + t.qrErr + '</span>') + '</div>';
 
-      let sub = 0;
-      rows.forEach((item, idx) => {
-        const lineTotal = (Number(item.qty) || 0) * (Number(item.price) || 0);
-        sub += lineTotal;
-        const cell = document.getElementById(`rowSum-${idx}`);
-        if (cell) cell.textContent = lineTotal.toFixed(2);
-      });
+  $('out').innerHTML = payload ? '<h2>' + t.qrOut + '</h2><code>' + esc(payload) + '</code>' : '';
+}
 
-      const vatAmt = sub * (rate / 100);
-      const grand = sub + vatAmt;
+document.addEventListener('input', function(e){
+  var t = e.target;
+  if (t.dataset && t.dataset.f) { items[+t.dataset.i][t.dataset.f] = t.value; }
+  update();
+});
+document.addEventListener('click', function(e){
+  var t = e.target;
+  if (t.dataset && t.dataset.del !== undefined) {
+    items.splice(+t.dataset.del, 1);
+    renderItems();
+    update();
+  }
+});
+$('add').onclick = function(){ items.push({n:'', q:'1', p:''}); renderItems(); update(); };
+$('langToggle').onclick = function(){ lang = (lang === 'ar') ? 'fr' : 'ar'; applyLangUI(); renderItems(); update(); };
+$('printBtn').onclick = function(){ window.print(); };
 
-      document.getElementById("v_sub").textContent = sub.toFixed(2);
-      document.getElementById("v_vatAmt").textContent = vatAmt.toFixed(2);
-      document.getElementById("v_grand").textContent = grand.toFixed(2);
+function setKind(k){
+  kind = k;
+  $('k1').className = k === 'simplified' ? 'on' : '';
+  $('k2').className = k === 'standard' ? 'on' : '';
+  $('buyerBox').style.display = k === 'standard' ? 'block' : 'none';
+  update();
+}
+function setRate(r){
+  rate = r;
+  $('r15').className = r === 15 ? 'on' : '';
+  $('r0').className = r === 0 ? 'on' : '';
+  update();
+}
+$('k1').onclick = function(){ setKind('simplified'); };
+$('k2').onclick = function(){ setKind('standard'); };
+$('r15').onclick = function(){ setRate(15); };
+$('r0').onclick = function(){ setRate(0); };
 
-      const qrBase64 = createZatcaBase64({
-        seller,
-        vat,
-        dateIso,
-        total: grand,
-        vatAmount: vatAmt
-      });
-
-      renderRealQR(qrBase64);
-    }
-
-    applyTexts();
-  </script>
+applyLangUI();
+setKind('simplified');
+renderItems();
+update();
+</script>
 </body>
 </html>
