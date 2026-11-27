@@ -241,14 +241,6 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 }
 .seller-name{font-weight:700;color:#111827}
 .seller-line{color:#374151}
-.balance-box{
-  margin-top:14px;
-  text-align:right;
-  width:100%;
-}
-.balance-lbl-ar{font-weight:700;color:#111827}
-.balance-lbl-en{color:#4b5563;font-size:11px;direction:ltr;text-align:right}
-.balance-val{font-weight:700;font-size:13px;color:#111827;direction:ltr;text-align:right;margin-top:2px}
 
 .inv-table-wrap{overflow-x:auto}
 .inv-table{
@@ -386,7 +378,7 @@ code.b64-box{
   .item-edit-row .desc-field{grid-column:1 / -1}
   .top-three-grid{grid-template-columns:1fr;gap:14px}
   .center-meta{padding-top:0;text-align:right}
-  .left-brand-col,.seller-info,.balance-box,.right-col,.client-title-en,.balance-lbl-en,.balance-val,.tax-title-en{
+  .left-brand-col,.seller-info,.right-col,.client-title-en,.tax-title-en{
     text-align:right;
     align-items:flex-start;
   }
@@ -478,10 +470,6 @@ code.b64-box{
       <div class="field">
         <label id="lbl_time">وقت الإصدار (للـ QR)</label>
         <input id="f_time" type="time" step="1" value="18:03:00">
-      </div>
-      <div class="field">
-        <label id="lbl_balance">الرصيد المتبقي</label>
-        <input id="f_balance" type="number" step="any" value="0.00">
       </div>
       <div class="field">
         <label id="lbl_cur">رمز العملة</label>
@@ -717,7 +705,7 @@ function zatcaPayload(seller, vat, timestamp, total, vatTotal) {
 }
 
 const $ = (id) => document.getElementById(id);
-const POS_STORAGE_KEY = 'zatca_invoice_positions_v2';
+const POS_STORAGE_KEY = 'zatca_invoice_positions_v3';
 let lang = 'ar';
 let kind = 'standard';
 let logoSrc = '';
@@ -761,14 +749,13 @@ const UI = {
     lblAddr1: 'العنوان / الحي', lblPhone: 'الهاتف / الرمز',
     lblClient: 'اسم العميل', lblClientAddr: 'عنوان العميل', lblClientVat: 'الرقم الضريبي للعميل',
     lblInv: 'رقم الفاتورة', lblInvDate: 'التاريخ', lblTime: 'وقت الإصدار (للـ QR)',
-    lblBalance: 'الرصيد المتبقي', lblCur: 'رمز العملة',
+    lblCur: 'رمز العملة',
     addRow: '+ إضافة بند', del: 'حذف',
     eDesc: 'الوصف', eQty: 'الكمية', ePrice: 'السعر', eTax: 'الضريبة %',
     clientAr: 'العميل', clientEn: 'Customer',
     invNoAr: 'رقم الفاتورة', invNoEn: 'Invoice number',
     dateAr: 'التاريخ', dateEn: 'Date',
     vatRegAr: 'رقم التسجيل الضريبي',
-    balAr: 'الرصيد المتبقي', balEn: 'Balance',
     thDesc: 'الوصف', thDescSub: 'Line Description',
     thQty: 'الكمية', thQtySub: 'Qty',
     thPrice: 'السعر', thPriceSub: 'Price',
@@ -801,14 +788,13 @@ const UI = {
     lblAddr1: 'Adresse / Quartier', lblPhone: 'Téléphone',
     lblClient: 'Nom du client', lblClientAddr: 'Adresse client', lblClientVat: 'TVA client',
     lblInv: 'N° Facture', lblInvDate: 'Date', lblTime: 'Heure (pour QR)',
-    lblBalance: 'Solde restant', lblCur: 'Devise',
+    lblCur: 'Devise',
     addRow: '+ Ajouter ligne', del: 'Suppr.',
     eDesc: 'Désignation', eQty: 'Quantité', ePrice: 'Prix', eTax: 'TVA %',
     clientAr: 'العميل', clientEn: 'Customer',
     invNoAr: 'رقم الفاتورة', invNoEn: 'Invoice number',
     dateAr: 'التاريخ', dateEn: 'Date',
     vatRegAr: 'رقم التسجيل الضريبي',
-    balAr: 'الرصيد المتبقي', balEn: 'Balance',
     thDesc: 'Désignation', thDescSub: 'Line Description',
     thQty: 'Quantité', thQtySub: 'Qty',
     thPrice: 'Prix', thPriceSub: 'Price',
@@ -899,7 +885,6 @@ function applyLabels() {
   $('lbl_inv').textContent = t.lblInv;
   $('lbl_invDate').textContent = t.lblInvDate;
   $('lbl_time').textContent = t.lblTime;
-  $('lbl_balance').textContent = t.lblBalance;
   $('lbl_cur').textContent = t.lblCur;
   $('add_row_btn').textContent = t.addRow;
   $('lbl_b64').textContent = t.b64Lbl;
@@ -922,7 +907,6 @@ function renderInvoice() {
   const invDate = $('f_invDate').value.trim();
   let timeVal = $('f_time').value.trim() || '00:00:00';
   if (timeVal.length === 5) timeVal += ':00';
-  const balance = Number($('f_balance').value || 0);
   const cur = $('f_cur').value.trim() || '﷼';
 
   const errs = [];
@@ -1017,11 +1001,6 @@ function renderInvoice() {
           <div class="seller-line" ${ed}>${esc(addr1)}</div>
           <div class="seller-line" ${ed}>${esc(phone)}</div>
           <div class="seller-line" ${ed}>${vat ? `${t.vatRegAr} ${esc(vat)}` : ''}</div>
-        </div>
-        <div class="balance-box">
-          <div class="balance-lbl-ar" ${ed}>${t.balAr}</div>
-          <div class="balance-lbl-en" ${ed}>${t.balEn}</div>
-          <div class="balance-val" ${ed}>${esc(cur)} ${fmtNum(balance)}</div>
         </div>
       </div>
     </div>
