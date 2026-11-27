@@ -172,7 +172,7 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .header-top-bar{
   display:flex;
   justify-content:space-between;
-  align-items:center;
+  align-items:flex-start;
   gap:12px;
   min-height:112px;
 }
@@ -181,6 +181,13 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   font-weight:800;
   color:#111827;
   padding:4px 10px;
+}
+.qr-stack{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:6px;
+  max-width:290px;
 }
 .top-qr-slot{
   width:112px;
@@ -194,6 +201,18 @@ button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   background:#fff;
 }
 .top-qr-slot svg{width:100%;height:100%}
+.qr-caption-box{
+  font-size:10.5px;
+  line-height:1.4;
+  color:#374151;
+  text-align:right;
+}
+.qr-caption-en{
+  direction:ltr;
+  text-align:left;
+  font-size:10px;
+  color:#4b5563;
+}
 
 .mid-grid{
   display:grid;
@@ -716,6 +735,8 @@ const UI = {
     kStd: 'ضريبية (B2B)', kSmp: 'مبسطة (B2C)',
     taxTitleStd: 'فاتورة ضريبية',
     taxTitleSmp: 'فاتورة ضريبية مبسطة',
+    qrCapAr: 'تم ترميز هذا الرمز وفقاً لمتطلبات هيئة الزكاة والضريبة والجمارك للفوترة الإلكترونية',
+    qrCapEn: 'This QR code is encoded as per ZATCA e-invoicing requirements',
     lblLogo: 'اللوجو (اختياري)', clearLogo: 'إزالة اللوجو',
     lblSeller: 'اسم الشركة', lblVat: 'السجل الضريبي (15 رقم)',
     lblAddr1: 'العنوان / الحي', lblPhone: 'الهاتف / الرمز',
@@ -742,7 +763,7 @@ const UI = {
     errVat: 'السجل الضريبي يجب أن يكون 15 رقماً يبدأ وينتهي بالرقم 3.',
     errItem: 'تأكد من إدخال وصف وكمية وسعر صحيح لكل بند.',
     tagTaxTitle: '⋮⋮ فاتورة ضريبية',
-    tagQr: '⋮⋮ QR', tagClient: '⋮⋮ العميل', tagMeta: '⋮⋮ الرقم والتاريخ',
+    tagQr: '⋮⋮ QR', tagQrCap: '⋮⋮ نص ZATCA', tagClient: '⋮⋮ العميل', tagMeta: '⋮⋮ الرقم والتاريخ',
     tagBrand: '⋮⋮ اللوجو والبيانات', tagTable: '⋮⋮ الجدول', tagTotals: '⋮⋮ الإجماليات'
   },
   fr: {
@@ -753,6 +774,8 @@ const UI = {
     kStd: 'Fiscale (B2B)', kSmp: 'Simplifiée (B2C)',
     taxTitleStd: 'Facture fiscale',
     taxTitleSmp: 'Facture fiscale simplifiée',
+    qrCapAr: 'تم ترميز هذا الرمز وفقاً لمتطلبات هيئة الزكاة والضريبة والجمارك للفوترة الإلكترونية',
+    qrCapEn: 'This QR code is encoded as per ZATCA e-invoicing requirements',
     lblLogo: 'Logo (optionnel)', clearLogo: 'Supprimer logo',
     lblSeller: 'Nom de l\'entreprise', lblVat: 'Registre fiscal / TVA (15 chiffres)',
     lblAddr1: 'Adresse / Quartier', lblPhone: 'Téléphone',
@@ -779,7 +802,7 @@ const UI = {
     errVat: 'Le numéro doit contenir 15 chiffres et commencer/finir par 3.',
     errItem: 'Vérifiez la désignation, la quantité et le prix de chaque ligne.',
     tagTaxTitle: '⋮⋮ Facture fiscale',
-    tagQr: '⋮⋮ QR', tagClient: '⋮⋮ Client', tagMeta: '⋮⋮ N° & Date',
+    tagQr: '⋮⋮ QR', tagQrCap: '⋮⋮ Texte ZATCA', tagClient: '⋮⋮ Client', tagMeta: '⋮⋮ N° & Date',
     tagBrand: '⋮⋮ Logo & Infos', tagTable: '⋮⋮ Tableau', tagTotals: '⋮⋮ Totaux'
   }
 };
@@ -937,12 +960,19 @@ function renderInvoice() {
 
   $('invoice_sheet').innerHTML = `
     <div class="header-top-bar">
-      ${qrSvg ? `
-        <div class="draggable-part top-qr-slot" data-pos-key="qr" style="${posStyle('qr')}">
-          <span class="drag-handle">${t.tagQr}</span>
-          ${qrSvg}
+      <div class="qr-stack">
+        ${qrSvg ? `
+          <div class="draggable-part top-qr-slot" data-pos-key="qr" style="${posStyle('qr')}">
+            <span class="drag-handle">${t.tagQr}</span>
+            ${qrSvg}
+          </div>
+        ` : ''}
+        <div class="draggable-part qr-caption-box" data-pos-key="qrCap" style="${posStyle('qrCap')}">
+          <span class="drag-handle">${t.tagQrCap}</span>
+          <div ${ed}>${esc(t.qrCapAr)}</div>
+          <div class="qr-caption-en" ${ed}>${esc(t.qrCapEn)}</div>
         </div>
-      ` : '<div></div>'}
+      </div>
 
       <div class="draggable-part tax-title-box" data-pos-key="taxTitle" style="${posStyle('taxTitle')}">
         <span class="drag-handle">${t.tagTaxTitle}</span>
